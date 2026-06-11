@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch Hub - Gamer Space</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-gamepad"></i> <span>PATCH<span class="neon-text">HUB</span></span>
+        </div>
+        <nav>
+            <ul id="categoryMenu">
+                <li class="active" data-category="all">Todos os Patches</li>
+            </ul>
+        </nav>
+        <div class="admin-toggle">
+            <button id="btnToggleAdmin" class="btn-neon"><i class="fa-solid fa-lock"></i> Painel Admin</button>
+            <button id="btnLogout" class="btn-secondary hidden"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="display-options">
+            <button id="setViewPS2" class="btn-tab active">Proporção PS2 (Vertical)</button>
+            <button id="setViewPS1" class="btn-tab">Proporção PS1 (Quadrado)</button>
+        </div>
+
+        <section class="games-mosaic" id="gamesMosaic">
+            </section>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <span class="close-modal" id="btnCloseGameModal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-cover-wrapper">
+                    <img id="modalCover" src="" alt="Capa do Jogo">
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalTitle">Título do Jogo</h2>
+                    <p id="modalDescription">Descrição detalhada do patch aqui...</p>
+                    <a id="modalDownloadBtn" href="#" target="_blank" class="btn-download">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> BAIXAR AGORA
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content login-content">
+            <span class="close-modal" id="btnCloseLoginModal">&times;</span>
+            <h2 class="neon-text" style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">Acesso Restrito</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-envelope"></i> E-mail do Administrador</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@seuemail.com">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-key"></i> Senha</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-download" style="width: 100%; margin-top: 10px;">Entrar no Painel</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="admin-panel hidden" id="adminPanel">
+        <div class="admin-header">
+            <h2><i class="fa-solid fa-database"></i> Painel Administrativo StreamHub Style</h2>
+            <button id="btnCloseAdmin" class="btn-close-panel">&times;</button>
+        </div>
+        
+        <div class="admin-actions">
+            <button id="btnNewPatch" class="btn-neon"><i class="fa-solid fa-plus"></i> Novo Patch</button>
+            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar JSON</button>
+            <button id="btnImportJSON" class="btn-secondary"><i class="fa-solid fa-upload"></i> Importar JSON</button>
+            <input type="file" id="fileImport" accept=".json" style="display: none;">
+        </div>
+
+        <div id="patchFormContainer" class="form-container hidden">
+            <h3 id="formTitle">Adicionar Novo Conteúdo</h3>
+            <form id="patchForm">
+                <input type="hidden" id="patchId">
+                <div class="form-group">
+                    <label>Título do Jogo</label>
+                    <input type="text" id="inputTitle" required placeholder="Ex: Resident Evil 4 Traduzido">
+                </div>
+                <div class="form-group">
+                    <label>URL da Capa (Thumbnail)</label>
+                    <input type="url" id="inputCover" required placeholder="https://link-da-imagem.com/capa.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Link de Download</label>
+                    <input type="url" id="inputDownload" required placeholder="https://mediafire.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Categoria (Para o Menu Superior)</label>
+                    <input type="text" id="inputCategory" required placeholder="Ex: PlayStation 2">
+                </div>
+                <div class="form-group">
+                    <label>Descrição do Patch</label>
+                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as modificações do patch..."></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn-neon">Salvar Patch</button>
+                    <button type="button" id="btnCancelForm" class="btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Capa</th>
+                        <th>Título</th>
+                        <th>Categoria</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>
