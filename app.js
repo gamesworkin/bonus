@@ -216,37 +216,19 @@ platformFiltersContainer.addEventListener('click', (e) => {
     }
 });
 
+// Criamos uma variável global para armazenar a URL de download ativa com segurança
+let activeDownloadUrl = "";
+
 function openModal(item) {
     document.getElementById('modalCover').src = item.cover;
     document.getElementById('modalTitle').textContent = item.title;
     document.getElementById('modalDescription').textContent = item.description;
     
-    // Deixa o href vazio ou com hashtag para esconder a URL real da barra inferior do navegador
+    // Deixa o href estático para esconder a URL real da barra inferior do navegador
     modalDownloadBtn.href = "javascript:void(0);";
     
-    // Remove qualquer ouvinte antigo clonando o botão para evitar acumular múltiplos cliques
-    const newDownloadBtn = modalDownloadBtn.cloneNode(true);
-    modalDownloadBtn.parentNode.replaceChild(newDownloadBtn, modalDownloadBtn);
-    
-    // Atualiza a referência global do elemento
-    window.modalDownloadBtn = newDownloadBtn;
-
-    // Bloqueia o clique direito silenciosamente no novo botão clonado
-    newDownloadBtn.addEventListener('contextmenu', (event) => event.preventDefault());
-
-    // Executa o download em segundo plano ao clicar, escondendo a origem
-    newDownloadBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const fileName = item.download.split('/').pop().split('#')[0].split('?')[0] || "patch_game";
-        
-        const tempAnchor = document.createElement('a');
-        tempAnchor.href = item.download;
-        tempAnchor.setAttribute('download', fileName);
-        tempAnchor.style.display = 'none';
-        document.body.appendChild(tempAnchor);
-        tempAnchor.click();
-        tempAnchor.remove();
-    });
+    // Salva a URL do jogo atual na nossa variável de controle seguro
+    activeDownloadUrl = item.download;
 
     document.getElementById('modalBadgeContainer').innerHTML = `
         <span class="badge">${item.platform}</span>
@@ -255,6 +237,23 @@ function openModal(item) {
     gameModal.classList.add('open');
 }
 
+// Ouvinte de clique único e permanente no botão de download (coloque logo abaixo da função openModal)
+if (modalDownloadBtn) {
+    modalDownloadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!activeDownloadUrl) return;
+
+        const fileName = activeDownloadUrl.split('/').pop().split('#')[0].split('?')[0] || "patch_game";
+        
+        const tempAnchor = document.createElement('a');
+        tempAnchor.href = activeDownloadUrl;
+        tempAnchor.setAttribute('download', fileName);
+        tempAnchor.style.display = 'none';
+        document.body.appendChild(tempAnchor);
+        tempAnchor.click();
+        tempAnchor.remove();
+    });
+}
 
 
 // ============================================================================
