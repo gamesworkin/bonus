@@ -49,13 +49,13 @@ if (whatsappBtn) {
     whatsappBtn.href = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 }
 
-// Bloqueia o clique direito especificamente sobre o botão de download para proteger o link direto
+// Bloqueia o clique direito silenciosamente sobre o botão de download
 if (modalDownloadBtn) {
     modalDownloadBtn.addEventListener('contextmenu', (event) => {
         event.preventDefault();
-        alert("Ação não permitida por motivos de segurança.");
     });
 }
+
 
 // ==========================================
 // 1. MONITOR DE FILTRAGEM E AUTENTICAÇÃO REAL
