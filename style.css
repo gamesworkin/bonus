@@ -174,8 +174,12 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
-    .games-mosaic { columns: 3 180px; }
+    .games-mosaic { 
+        columns: 3 100px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
+        column-gap: 15px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
+    }
 }
+
 
 @media (max-width: 768px) {
     header { flex-direction: column; gap: 15px; padding: 20px; }
