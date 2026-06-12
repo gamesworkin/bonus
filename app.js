@@ -221,12 +221,32 @@ function openModal(item) {
     document.getElementById('modalTitle').textContent = item.title;
     document.getElementById('modalDescription').textContent = item.description;
     
-    // Altera o link direto no botão de download na mesma aba
-    modalDownloadBtn.href = item.download;
+    // Deixa o href vazio ou com hashtag para esconder a URL real da barra inferior do navegador
+    modalDownloadBtn.href = "javascript:void(0);";
     
-    // Extrai o nome real do arquivo da URL para sugerir ao navegador na hora do salvamento automático
-    const fileName = item.download.split('/').pop().split('#')[0].split('?')[0] || "patch_game";
-    modalDownloadBtn.setAttribute('download', fileName);
+    // Remove qualquer ouvinte antigo clonando o botão para evitar acumular múltiplos cliques
+    const newDownloadBtn = modalDownloadBtn.cloneNode(true);
+    modalDownloadBtn.parentNode.replaceChild(newDownloadBtn, modalDownloadBtn);
+    
+    // Atualiza a referência global do elemento
+    window.modalDownloadBtn = newDownloadBtn;
+
+    // Bloqueia o clique direito silenciosamente no novo botão clonado
+    newDownloadBtn.addEventListener('contextmenu', (event) => event.preventDefault());
+
+    // Executa o download em segundo plano ao clicar, escondendo a origem
+    newDownloadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const fileName = item.download.split('/').pop().split('#')[0].split('?')[0] || "patch_game";
+        
+        const tempAnchor = document.createElement('a');
+        tempAnchor.href = item.download;
+        tempAnchor.setAttribute('download', fileName);
+        tempAnchor.style.display = 'none';
+        document.body.appendChild(tempAnchor);
+        tempAnchor.click();
+        tempAnchor.remove();
+    });
 
     document.getElementById('modalBadgeContainer').innerHTML = `
         <span class="badge">${item.platform}</span>
@@ -234,6 +254,7 @@ function openModal(item) {
     `;
     gameModal.classList.add('open');
 }
+
 
 
 // ============================================================================
