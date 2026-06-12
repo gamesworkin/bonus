@@ -19,7 +19,7 @@
         </div>
         <nav>
             <ul id="categoryMenu">
-                <li class="active" data-category="all">Todos os Patches</li>
+                <li class="active" data-category="all">Todas as Categorias</li>
             </ul>
         </nav>
         <div class="admin-toggle">
@@ -29,10 +29,8 @@
     </header>
 
     <main class="container">
-        <div class="display-options">
-            <button id="setViewPS2" class="btn-tab active">Proporção PS2 (Vertical)</button>
-            <button id="setViewPS1" class="btn-tab">Proporção PS1 (Quadrado)</button>
-        </div>
+        <div class="platform-filters" id="platformFiltersContainer">
+            </div>
 
         <section class="games-mosaic" id="gamesMosaic">
             </section>
@@ -46,8 +44,11 @@
                     <img id="modalCover" src="" alt="Capa do Jogo">
                 </div>
                 <div class="modal-info">
-                    <h2 id="modalTitle">Título do Jogo</h2>
-                    <p id="modalDescription">Descrição detalhada do patch aqui...</p>
+                    <div>
+                        <h2 id="modalTitle">Título do Jogo</h2>
+                        <div id="modalBadgeContainer" style="margin-bottom: 15px;"></div>
+                        <p id="modalDescription">Descrição detalhada do patch aqui...</p>
+                    </div>
                     <a id="modalDownloadBtn" href="#" target="_blank" class="btn-download">
                         <i class="fa-solid fa-cloud-arrow-down"></i> BAIXAR AGORA
                     </a>
@@ -76,62 +77,58 @@
 
     <section class="admin-panel hidden" id="adminPanel">
         <div class="admin-header">
-            <h2><i class="fa-solid fa-database"></i> Painel Administrativo StreamHub Style</h2>
+            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador Estruturado StreamHub</h2>
             <button id="btnCloseAdmin" class="btn-close-panel">&times;</button>
         </div>
         
         <div class="admin-actions">
             <button id="btnNewPatch" class="btn-neon"><i class="fa-solid fa-plus"></i> Novo Patch</button>
-            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar JSON</button>
+            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar Backup JSON</button>
             <button id="btnImportJSON" class="btn-secondary"><i class="fa-solid fa-upload"></i> Importar JSON</button>
             <input type="file" id="fileImport" accept=".json" style="display: none;">
         </div>
 
         <div id="patchFormContainer" class="form-container hidden">
-            <h3 id="formTitle">Adicionar Novo Conteúdo</h3>
+            <h3 id="formTitle" style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px; color: var(--accent-neon);">Adicionar Novo Conteúdo</h3>
             <form id="patchForm">
                 <input type="hidden" id="patchId">
-                <div class="form-group">
-                    <label>Título do Jogo</label>
-                    <input type="text" id="inputTitle" required placeholder="Ex: Resident Evil 4 Traduzido">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Título do Jogo</label>
+                        <input type="text" id="inputTitle" required placeholder="Ex: Resident Evil 4">
+                    </div>
+                </div>
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Plataforma</label>
+                        <input type="text" id="inputPlatform" required placeholder="Ex: PlayStation 2">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <input type="text" id="inputCategory" required placeholder="Ex: Terror / Ação">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>URL da Capa (Thumbnail)</label>
-                    <input type="url" id="inputCover" required placeholder="https://link-da-imagem.com/capa.jpg">
+                    <label>URL da Capa</label>
+                    <input type="url" id="inputCover" required placeholder="https://...">
                 </div>
                 <div class="form-group">
                     <label>Link de Download</label>
-                    <input type="url" id="inputDownload" required placeholder="https://mediafire.com/...">
-                </div>
-                <div class="form-group">
-                    <label>Categoria (Para o Menu Superior)</label>
-                    <input type="text" id="inputCategory" required placeholder="Ex: PlayStation 2">
+                    <input type="url" id="inputDownload" required placeholder="https://...">
                 </div>
                 <div class="form-group">
                     <label>Descrição do Patch</label>
-                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as modificações do patch..."></textarea>
+                    <textarea id="inputDescription" rows="3" required placeholder="Modificações inclusas no patch..."></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="btn-neon">Salvar Patch</button>
+                    <button type="submit" class="btn-neon">Salvar Alterações</button>
                     <button type="button" id="btnCancelForm" class="btn-secondary">Cancelar</button>
                 </div>
             </form>
         </div>
 
-        <div class="table-responsive">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Capa</th>
-                        <th>Título</th>
-                        <th>Categoria</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="adminTableBody">
-                    </tbody>
-            </table>
-        </div>
+        <div class="tree-manager" id="treeManager">
+            </div>
     </section>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
