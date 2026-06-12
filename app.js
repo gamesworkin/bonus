@@ -1,15 +1,9 @@
 // ============================================================================
-// 1. IMPORTAÇÃO DOS MÓDULOS DO FIREBASE (SDK v9/v10 MODULAR)
+// CONFIGURAÇÃO DO FIREBASE (SUBSTITUA PELOS SEUS DADOS REAIS DO CONSOLE)
+// ATENÇÃO: No databaseURL NÃO coloque ".json" no final! Deixe terminar em .com ou rtdb.firebaseio.com
 // ============================================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// ============================================================================
-// 2. CONFIGURAÇÃO DAS CREDENCIAIS DO FIREBASE
-// ============================================================================
-// Altere apenas os valores abaixo com as informações do seu console do Firebase
 const firebaseConfig = {
-     apiKey: "AIzaSyAQUCCvXQFuCcRHBqNqg4XxSENa8Xv0WeA",
+    apiKey: "AIzaSyAQUCCvXQFuCcRHBqNqg4XxSENa8Xv0WeA",
     authDomain: "gamesbonus.firebaseapp.com",
     databaseURL: "https://gamesbonus-default-rtdb.firebaseio.com", 
     projectId: "gamesbonus",
@@ -18,193 +12,488 @@ const firebaseConfig = {
     appId: "1:1066854012332:web:0caad49aa18422b39b9609"
 };
 
-// Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
+// Configuração do WhatsApp - ADICIONE SEU NÚMERO AQUI (Apenas números com DDD e sem espaços)
+const WHATSAPP_NUMBER = "5511999999999"; 
+const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre os patches.";
 
-// Inicializa o banco de dados Firestore
-const db = getFirestore(app);
+// Inicialização Estrita
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const auth = firebase.auth();
 
-// Array global que armazenará todos os objetos de dados carregados do banco
-let gamesData = [];
-
-// ============================================================================
-// 3. MAPEAMENTO E SELEÇÃO DE ELEMENTOS DO DOM
-// ============================================================================
-const gamesGrid = document.getElementById('gamesGrid');
+// ELEMENTOS DOM
+const gamesMosaic = document.getElementById('gamesMosaic');
+const categoryMenu = document.getElementById('categoryMenu');
+const platformFiltersContainer = document.getElementById('platformFiltersContainer');
 const gameModal = document.getElementById('gameModal');
-const closeModalBtn = document.getElementById('closeModalBtn');
-const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+const loginModal = document.getElementById('loginModal');
+const helpModal = document.getElementById('helpModal'); // Novo Elemento de Ajuda
+const adminPanel = document.getElementById('adminPanel');
+const patchForm = document.getElementById('patchForm');
+const treeManager = document.getElementById('treeManager');
 
-// ============================================================================
-// 4. FUNÇÃO PARA CONTROLAR A BUSCA DE DADOS NO FIRESTORE
-// ============================================================================
-async function fetchGamesFromFirebase() {
-    try {
-        console.log("Iniciando a busca de patches no banco de dados...");
-        
-        // Conecta à coleção chamada 'jogos'. Caso sua coleção tenha outro nome, altere aqui.
-        const querySnapshot = await getDocs(collection(db, "jogos")); 
-        
-        // Limpa o array local antes de colocar os novos dados atualizados
-        gamesData = [];
-        
-        // Percorre cada documento retornado pelo banco de dados
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            
-            // Cria o objeto estruturado tratando campos vazios com valores padrões (fallback)
-            gamesData.push({
-                id: doc.id,
-                title: data.title || "Sem título informado",
-                category: data.category || "Geral",
-                platform: data.platform || "PC",
-                cover: data.cover || "https://via.placeholder.com/200x250",
-                description: data.description || "Nenhuma descrição detalhada foi fornecida para este item.",
-                download: data.download || "#" // Armazena a URL de download direto configurada no banco
-            });
-        });
-        
-        console.log("Dados carregados com sucesso! Total de itens:", gamesData.length);
-        
-        // Chama a renderização visual dos cards após terminar o carregamento dos dados
-        renderGames();
-        
-    } catch (error) {
-        console.error("Ocorreu um erro crítico ao buscar os dados do Firebase: ", error);
-        gamesGrid.innerHTML = `
-            <div style="text-align: center; color: #ff3333; width: 100%; padding: 20px;">
-                <i class="fa-solid fa-triangle-exclamation" style="font-size: 40px; margin-bottom: 10px;"></i>
-                <p>Erro ao carregar a lista de patches. Por favor, tente novamente mais tarde.</p>
-            </div>
-        `;
-    }
+const btnToggleAdmin = document.getElementById('btnToggleAdmin');
+const btnLogout = document.getElementById('btnLogout');
+const btnHelp = document.getElementById('btnHelp'); // Novo Elemento de Ajuda
+const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+const whatsappBtn = document.getElementById('whatsappBtn'); // Novo Elemento do WhatsApp
+
+// ESTADO GLOBAL DO APP
+let localData = {}; 
+let currentCategory = 'all';
+let currentPlatform = 'all';
+let isAdmin = false;
+
+// Inicializa o link do botão flutuante do WhatsApp dinamicamente
+if (whatsappBtn) {
+    whatsappBtn.href = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 }
 
-// ============================================================================
-// 5. FUNÇÃO PARA RENDERIZAR OS CARDS NA TELA DO USUÁRIO
-// ============================================================================
-function renderGames() {
-    // Limpa o container da grid antes de injetar os cards
-    gamesGrid.innerHTML = '';
-    
-    // Verifica se a lista retornada do banco está vazia
-    if (gamesData.length === 0) {
-        gamesGrid.innerHTML = `
-            <p style="text-align: center; color: #aaa; width: 100%; padding: 40px;">
-                Nenhum patch ou mod disponível no momento.
-            </p>
-        `;
-        return;
-    }
-
-    // Cria a estrutura HTML dinâmica para cada jogo da lista
-    gamesData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'game-card';
-        
-        // Injeta a estrutura interna do card de forma limpa
-        card.innerHTML = `
-            <img src="${item.cover}" alt="${item.title}" class="game-cover" draggable="false">
-            <div class="game-info">
-                <span class="badge">${item.platform}</span>
-                <h3 class="game-title" style="margin: 10px 0 0 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</h3>
-            </div>
-        `;
-        
-        // Vincula o evento de clique para abrir o Modal passando o objeto inteiro do jogo selecionado
-        card.addEventListener('click', () => openModal(item));
-        
-        // Adiciona o card finalizado dentro do container principal da grid
-        gamesGrid.appendChild(card);
+// Bloqueia o clique direito especificamente sobre o botão de download para proteger o link direto
+if (modalDownloadBtn) {
+    modalDownloadBtn.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        alert("Ação não permitida por motivos de segurança.");
     });
 }
 
-// ============================================================================
-// 6. FUNÇÃO PARA ABRIR O MODAL E MANIPULAR O DOWNLOAD DIRETO
-// ============================================================================
+// ==========================================
+// 1. MONITOR DE FILTRAGEM E AUTENTICAÇÃO REAL
+// ==========================================
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        isAdmin = true;
+        btnToggleAdmin.innerHTML = `<i class="fa-solid fa-folder-tree"></i> Abrir Gerenciador`;
+        btnLogout.classList.remove('hidden');
+    } else {
+        isAdmin = false;
+        btnToggleAdmin.innerHTML = `<i class="fa-solid fa-lock"></i> Painel Admin`;
+        btnLogout.classList.add('hidden');
+        adminPanel.classList.add('hidden');
+    }
+    startDatabaseSync();
+});
+
+// Evento de Login Real no Firebase
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+            loginModal.classList.remove('open');
+            adminPanel.classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        })
+        .catch(err => {
+            alert("Erro de Autenticação Firebase: " + err.message);
+        });
+});
+
+// Logout
+btnLogout.addEventListener('click', () => {
+    auth.signOut().then(() => {
+        location.reload();
+    });
+});
+
+btnToggleAdmin.addEventListener('click', () => {
+    if (isAdmin) adminPanel.classList.remove('hidden');
+    else loginModal.classList.add('open');
+});
+
+// Controle de Abertura do Modal de Ajuda
+if (btnHelp) {
+    btnHelp.addEventListener('click', () => {
+        helpModal.classList.add('open');
+    });
+}
+
+document.getElementById('btnCloseLoginModal').addEventListener('click', () => loginModal.classList.remove('open'));
+document.getElementById('btnCloseGameModal').addEventListener('click', () => gameModal.classList.remove('open'));
+document.getElementById('btnCloseHelpModal').addEventListener('click', () => helpModal.classList.remove('open')); // Controle de Fechamento da Ajuda
+document.getElementById('btnCloseAdmin').addEventListener('click', () => adminPanel.classList.add('hidden'));
+
+
+// ==========================================
+// 2. SINCRONIZAÇÃO E OPERAÇÃO DO BANCO (CRUD)
+// ==========================================
+function startDatabaseSync() {
+    database.ref('patches').on('value', (snapshot) => {
+        localData = snapshot.val() || {};
+        renderApp();
+    });
+}
+
+function savePatchToFirebase(id, payload) {
+    if (!isAdmin) return alert("Erro: Você não está autenticado.");
+    if (id) {
+        database.ref(`patches/${id}`).set(payload)
+            .then(() => alert("Atualizado com sucesso!"));
+    } else {
+        database.ref('patches').push(payload)
+            .then(() => alert("Cadastrado com sucesso!"));
+    }
+}
+
+function deleteSinglePatch(id) {
+    if (!isAdmin) return alert("Acesso negado.");
+    if (confirm("Deletar este jogo permanentemente?")) {
+        database.ref(`patches/${id}`).remove();
+    }
+}
+
+
+// ==========================================
+// 3. RENDERIZAÇÃO DA VITRINE PÚBLICA
+// ==========================================
+function renderApp() {
+    gamesMosaic.innerHTML = '';
+    const categories = new Set();
+    const platforms = new Set();
+    
+    Object.keys(localData).forEach(key => {
+        const item = localData[key];
+        if (item.category) categories.add(item.category.trim());
+        if (item.platform) platforms.add(item.platform.trim());
+
+        const matchCategory = (currentCategory === 'all' || item.category === currentCategory);
+        const matchPlatform = (currentPlatform === 'all' || item.platform === currentPlatform);
+
+        if (matchCategory && matchPlatform) {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="game-cover-wrapper">
+                    <img src="${item.cover}" alt="${item.title}" loading="lazy">
+                    <div class="game-hover-desc">${item.description}</div>
+                </div>
+                <div class="game-title">${item.title}</div>
+            `;
+            card.addEventListener('click', () => openModal(item));
+            gamesMosaic.appendChild(card);
+        }
+    });
+
+    renderFilters(categories, platforms);
+    if (isAdmin) renderTreeManager();
+}
+
+function renderFilters(categories, platforms) {
+    // Categorias Menu Superior
+    categoryMenu.innerHTML = `<li class="${currentCategory === 'all' ? 'active' : ''}" data-category="all">Todas as Categorias</li>`;
+    categories.forEach(cat => {
+        const li = document.createElement('li');
+        li.className = currentCategory === cat ? 'active' : '';
+        li.textContent = cat;
+        li.setAttribute('data-category', cat);
+        categoryMenu.appendChild(li);
+    });
+
+    // Plataformas
+    platformFiltersContainer.innerHTML = `<button class="btn-tab ${currentPlatform === 'all' ? 'active' : ''}" data-platform="all">Todas as Plataformas</button>`;
+    platforms.forEach(plat => {
+        const btn = document.createElement('button');
+        btn.className = `btn-tab ${currentPlatform === plat ? 'active' : ''}`;
+        btn.textContent = plat;
+        btn.setAttribute('data-platform', plat);
+        platformFiltersContainer.appendChild(btn);
+    });
+}
+
+categoryMenu.addEventListener('click', (e) => {
+    if (e.target.tagName === 'LI') {
+        currentCategory = e.target.getAttribute('data-category');
+        renderApp();
+    }
+});
+
+platformFiltersContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('btn-tab')) {
+        currentPlatform = e.target.getAttribute('data-platform');
+        renderApp();
+    }
+});
+
 function openModal(item) {
-    // Altera os textos e imagens de exibição do modal baseado no card clicado
     document.getElementById('modalCover').src = item.cover;
     document.getElementById('modalTitle').textContent = item.title;
     document.getElementById('modalDescription').textContent = item.description;
     
-    // Configura o link direto do download no elemento <a>
+    // Altera o link direto no botão de download na mesma aba
     modalDownloadBtn.href = item.download;
     
-    // LÓGICA DE DOWNLOAD DIRETO:
-    // Extrai de forma segura o nome do arquivo da URL (ex: 'traducao_re3.exe') removendo parâmetros de cache ou IDs extras (? ou #)
-    // Isso força o sistema do usuário a abrir a caixinha nativa para salvar o arquivo na hora, sem sair da página.
-    const fileName = item.download.split('/').pop().split('#')[0].split('?')[0] || "patch_download";
+    // Extrai o nome real do arquivo da URL para sugerir ao navegador na hora do salvamento automático
+    const fileName = item.download.split('/').pop().split('#')[0].split('?')[0] || "patch_game";
     modalDownloadBtn.setAttribute('download', fileName);
 
-    // Injeta as tags de categorias de forma dinâmica dentro do modal
     document.getElementById('modalBadgeContainer').innerHTML = `
         <span class="badge">${item.platform}</span>
         <span class="badge purple">${item.category}</span>
     `;
-    
-    // Exibe o modal adicionando a classe CSS correspondente
     gameModal.classList.add('open');
 }
 
+
 // ============================================================================
-// 7. FUNÇÃO PARA FECHAR O MODAL DE EXIBIÇÃO
+// 4. ESTRUTURAÇÃO EM ÁRVORE AVANÇADA (CONTROLE TOTAL DE ATRIBUTOS)
 // ============================================================================
-function closeModal() {
-    gameModal.classList.remove('open');
+function renderTreeManager() {
+    treeManager.innerHTML = '';
+    const tree = {};
+
+    // Remapeia os dados estruturando por [Plataforma][Categoria] -> Jogos
+    Object.keys(localData).forEach(key => {
+        const item = localData[key];
+        const p = item.platform || "Não Classificado";
+        const c = item.category || "Geral";
+        if (!tree[p]) tree[p] = {};
+        if (!tree[p][c]) tree[p][c] = [];
+        tree[p][c].push({ id: key, ...item });
+    });
+
+    // 1. LOOP DE PLATAFORMAS
+    Object.keys(tree).sort().forEach(platName => {
+        const platNode = document.createElement('div');
+        platNode.className = 'tree-node-platform';
+        platNode.innerHTML = `
+            <div class="tree-handle">
+                <h4><i class="fa-solid fa-layer-group" style="color:var(--accent-neon)"></i> ${platName}</h4>
+                <div class="tree-controls-wrapper">
+                    <div class="tree-actions">
+                        <button class="btn-action btn-edit" title="Editar nome da Plataforma em todos os jogos" onclick="event.stopPropagation(); batchEditAttribute('platform', '${platName}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-action btn-export-mini" title="Exportar esta Plataforma" onclick="event.stopPropagation(); batchExportTree('${platName}', null)"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn-action btn-delete" title="Deletar todos os jogos desta plataforma" onclick="event.stopPropagation(); batchDeleteTree('${platName}', null)"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-muted"></i>
+                </div>
+            </div>
+            <div class="tree-content"></div>
+        `;
+
+        const platContent = platNode.querySelector('.tree-content');
+        platNode.querySelector('.tree-handle').addEventListener('click', () => platContent.classList.toggle('open'));
+
+        // 2. LOOP DE CATEGORIAS DENTRO DA PLATAFORMA
+        Object.keys(tree[platName]).sort().forEach(catName => {
+            const catNode = document.createElement('div');
+            catNode.className = 'tree-node-category';
+            catNode.innerHTML = `
+                <div class="tree-cat-handle">
+                    <span><i class="fa-regular fa-folder-open" style="color:var(--accent-purple)"></i> ${catName}</span>
+                    <div class="tree-actions" onclick="event.stopPropagation();">
+                        <button class="btn-action btn-edit" title="Editar nome da Categoria" onclick="batchEditAttribute('category', '${catName}', '${platName}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-action btn-export-mini" title="Exportar esta Categoria" onclick="batchExportTree('${platName}', '${catName}')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn-action btn-delete" title="Deletar esta categoria nesta plataforma" onclick="batchDeleteTree('${platName}', '${catName}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="tree-games-list tree-content"></div>
+            `;
+
+            const gamesList = catNode.querySelector('.tree-games-list');
+            catNode.querySelector('.tree-cat-handle').addEventListener('click', () => gamesList.classList.toggle('open'));
+
+            // 3. LOOP DOS JOGOS INDIVIDUAIS
+            tree[platName][catName].forEach(game => {
+                const gameItem = document.createElement('div');
+                gameItem.className = 'tree-game-item';
+                gameItem.innerHTML = `
+                    <div class="tree-game-info">
+                        <img src="${game.cover}">
+                        <span>${game.title}</span>
+                    </div>
+                    <div class="tree-actions">
+                        <button class="btn-action btn-edit" onclick="triggerEditForm('${game.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteSinglePatch('${game.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                gamesList.appendChild(gameItem);
+            });
+
+            platContent.appendChild(catNode);
+        });
+
+        treeManager.appendChild(platNode);
+    });
 }
 
-// Vincula o clique no botão 'X' para fechar o modal
-closeModalBtn.addEventListener('click', closeModal);
 
-// Fecha o modal caso o usuário clique na área escura (fora da caixa de conteúdo)
-gameModal.addEventListener('click', (e) => {
-    if (e.target === gameModal) {
-        closeModal();
-    }
+// ==========================================
+// 5. FUNÇÕES DE EDICÃO, EXCLUSÃO E EXPORTAÇÃO EM MASSA
+// ==========================================
+
+// Modificar Atributos Globais (Mudar nome de plataforma ou categoria em lote)
+window.batchEditAttribute = function(type, oldValue, contextPlatform = null) {
+    const newValue = prompt(`Alterar o nome de ${type === 'platform' ? 'Plataforma' : 'Categoria'} de "${oldValue}" para:`, oldValue);
+    if (!newValue || newValue.trim() === oldValue) return;
+
+    const updates = {};
+    Object.keys(localData).forEach(key => {
+        const item = localData[key];
+        if (type === 'platform' && item.platform === oldValue) {
+            updates[`patches/${key}/platform`] = newValue.trim();
+        } else if (type === 'category' && item.category === oldValue && (!contextPlatform || item.platform === contextPlatform)) {
+            updates[`patches/${key}/category`] = newValue.trim();
+        }
+    });
+
+    database.ref().update(updates).then(() => alert("Atualização em lote concluída!"));
+};
+
+// Exportação Filtrada por Galho
+window.batchExportTree = function(platform, category) {
+    const filtered = {};
+    Object.keys(localData).forEach(key => {
+        const item = localData[key];
+        const matchP = item.platform === platform;
+        const matchC = !category || item.category === category;
+        if (matchP && matchC) filtered[key] = item;
+    });
+
+    const title = category ? `backup_${platform}_${category}` : `backup_${platform}`;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filtered, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `${title.toLowerCase().replace(/\s+/g, '_')}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+};
+
+// Exclusão em Massa por Galho da Árvore
+window.batchDeleteTree = function(platform, category) {
+    const scope = category ? `a categoria "${category}" da plataforma "${platform}"` : `a plataforma "${platform}" COMPLETA`;
+    if (!confirm(`CUIDADO: Deseja apagar TODOS os patches pertencentes a ${scope}? Essa ação não tem volta.`)) return;
+
+    const updates = {};
+    Object.keys(localData).forEach(key => {
+        const item = localData[key];
+        const matchP = item.platform === platform;
+        const matchC = !category || item.category === category;
+        if (matchP && matchC) {
+            updates[`patches/${key}`] = null; // Envia nulo para remover do nó do Realtime Database
+        }
+    });
+
+    database.ref().update(updates).then(() => alert("Exclusão em massa realizada com sucesso."));
+};
+
+
+// ==========================================
+// 6. FORMULÁRIO DE ENTRADA
+// ==========================================
+document.getElementById('btnNewPatch').addEventListener('click', () => {
+    patchForm.reset();
+    document.getElementById('patchId').value = '';
+    document.getElementById('formTitle').textContent = "Adicionar Novo Conteúdo";
+    document.getElementById('patchFormContainer').classList.remove('hidden');
 });
+document.getElementById('btnCancelForm').addEventListener('click', () => document.getElementById('patchFormContainer').classList.add('hidden'));
 
-// ============================================================================
-// 8. SCRIPT INTEGRADO DE PROTEÇÃO E SEGURANÇA (ANTI-CÓPIA / ANTI-LINK)
-// ============================================================================
-
-// Intercepta e bloqueia o menu de contexto original (Botão direito do mouse) em toda a página
-document.addEventListener('contextmenu', (e) => {
+patchForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    const id = document.getElementById('patchId').value;
+    const payload = {
+        title: document.getElementById('inputTitle').value.trim(),
+        platform: document.getElementById('inputPlatform').value.trim(),
+        category: document.getElementById('inputCategory').value.trim(),
+        cover: document.getElementById('inputCover').value.trim(),
+        download: document.getElementById('inputDownload').value.trim(),
+        description: document.getElementById('inputDescription').value.trim()
+    };
+    savePatchToFirebase(id ? id : null, payload);
+    document.getElementById('patchFormContainer').classList.add('hidden');
+    patchForm.reset();
 });
 
-// Intercepta o teclado para mitigar inspeções do código fonte ou cópias de links por atalhos
-document.addEventListener('keydown', (e) => {
-    // Bloqueia de forma direta a tecla F12
-    if (e.key === 'F12') {
-        e.preventDefault();
-    }
+window.triggerEditForm = function(key) {
+    const item = localData[key];
+    document.getElementById('patchId').value = key;
+    document.getElementById('inputTitle').value = item.title;
+    document.getElementById('inputPlatform').value = item.platform || '';
+    document.getElementById('inputCategory').value = item.category;
+    document.getElementById('inputCover').value = item.cover;
+    document.getElementById('inputDownload').value = item.download;
+    document.getElementById('inputDescription').value = item.description;
     
-    // Bloqueia combinações para ferramentas de desenvolvimento: Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
-    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-        e.preventDefault();
-    }
-    
-    // Bloqueia o atalho Ctrl+U utilizado para visualizar o código fonte estrutural da página
-    if (e.ctrlKey && e.key === 'u') {
-        e.preventDefault();
-    }
-    
-    // Bloqueia o Ctrl+C para evitar cópia de textos e Ctrl+S para evitar que baixem o esqueleto da página
-    if (e.ctrlKey && (e.key === 'c' || e.key === 's')) {
-        e.preventDefault();
-    }
+    document.getElementById('formTitle').textContent = "Editando Jogo: " + item.title;
+    document.getElementById('patchFormContainer').classList.remove('hidden');
+    adminPanel.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+
+// ==========================================
+// 7. BACKUP TOTAL (IMPORTAÇÃO / EXPORTAÇÃO)
+// ==========================================
+document.getElementById('btnExportJSON').addEventListener('click', () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localData, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "patchhub_database_full.json");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
 });
 
-// Desativa o recurso nativo de selecionar e arrastar textos na interface via cursor
-document.addEventListener('selectstart', (e) => {
-    e.preventDefault();
+document.getElementById('btnImportJSON').addEventListener('click', () => document.getElementById('fileImport').click());
+document.getElementById('fileImport').addEventListener('change', function(e) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            const importedData = JSON.parse(event.target.result);
+            if (confirm("Injetar registros do JSON selecionado no banco do Firebase?")) {
+                const updates = {};
+                Object.keys(importedData).forEach(key => {
+                    const item = importedData[key];
+                    if(item.title) {
+                        const newId = database.ref().child('patches').push().key;
+                        updates[`patches/${newId}`] = item;
+                    }
+                });
+                database.ref().update(updates).then(() => alert('Sincronização do JSON finalizada no Firebase!'));
+            }
+        } catch (err) { alert('Formato de JSON inválido.'); }
+    };
+    if(e.target.files[0]) reader.readAsText(e.target.files[0]);
 });
 
-// ============================================================================
-// 9. EVENTO DE INICIALIZAÇÃO DA APLICAÇÃO
-// ============================================================================
-// Executa a busca no Firebase assim que a árvore do DOM estiver completamente montada e pronta
-document.addEventListener('DOMContentLoaded', () => {
-    fetchGamesFromFirebase();
+
+// ==========================================
+// 8. EFEITO DE GLOW DE PARTÍCULAS
+// ==========================================
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particlesArray = [];
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+class Particle {
+    constructor(x, y) {
+        this.x = x; this.y = y;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 1.2 - 0.6;
+        this.speedY = Math.random() * 1.2 - 0.6;
+        this.color = Math.random() > 0.5 ? '#00f0ff' : '#9d4edd';
+        this.alpha = 1;
+        this.decay = Math.random() * 0.015 + 0.01;
+    }
+    update() { this.x += this.speedX; this.y += this.speedY; this.alpha -= this.decay; }
+    draw() {
+        ctx.save(); ctx.globalAlpha = this.alpha;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
+    }
+}
+window.addEventListener('mousemove', (e) => {
+    for (let i = 0; i < 2; i++) particlesArray.push(new Particle(e.clientX, e.clientY));
 });
+function handleParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update(); particlesArray[i].draw();
+        if (particlesArray[i].alpha <= 0) { particlesArray.splice(i, 1); i--; }
+    }
+    requestAnimationFrame(handleParticles);
+}
+handleParticles();
