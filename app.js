@@ -67,7 +67,7 @@ auth.onAuthStateChanged((user) => {
         btnLogout.classList.remove('hidden');
     } else {
         isAdmin = false;
-        btnToggleAdmin.innerHTML = `<i class="fa-solid fa-lock"></i> Painel Admin`;
+        btnToggleAdmin.innerHTML = `<i class="fa-solid fa-lock"></i> ACESSO RESTRITO`;
         btnLogout.classList.add('hidden');
         adminPanel.classList.add('hidden');
     }
