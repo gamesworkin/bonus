@@ -13,8 +13,8 @@ const firebaseConfig = {
 };
 
 // Configuração do WhatsApp - ADICIONE SEU NÚMERO AQUI (Apenas números com DDD e sem espaços)
-const WHATSAPP_NUMBER = "5511999999999"; 
-const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre os patches.";
+const WHATSAPP_NUMBER = "5588988470190"; 
+const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre os jogos.";
 
 // Inicialização Estrita
 firebase.initializeApp(firebaseConfig);
