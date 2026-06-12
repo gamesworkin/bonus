@@ -29,11 +29,9 @@
     </header>
 
     <main class="container">
-        <div class="platform-filters" id="platformFiltersContainer">
-            </div>
+        <div class="platform-filters" id="platformFiltersContainer"></div>
 
-        <section class="games-mosaic" id="gamesMosaic">
-            </section>
+        <section class="games-mosaic" id="gamesMosaic"></section>
     </main>
 
     <div class="modal" id="gameModal">
@@ -47,7 +45,7 @@
                     <div>
                         <h2 id="modalTitle">Título do Jogo</h2>
                         <div id="modalBadgeContainer" style="margin-bottom: 15px;"></div>
-                        <p id="modalDescription">Descrição detalhada do patch aqui...</p>
+                        <p id="modalDescription">Descrição do patch...</p>
                     </div>
                     <a id="modalDownloadBtn" href="#" target="_blank" class="btn-download">
                         <i class="fa-solid fa-cloud-arrow-down"></i> BAIXAR AGORA
@@ -60,31 +58,31 @@
     <div class="modal" id="loginModal">
         <div class="modal-content login-content">
             <span class="close-modal" id="btnCloseLoginModal">&times;</span>
-            <h2 class="neon-text" style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">Acesso Restrito</h2>
+            <h2 class="neon-text" style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">Painel de Controle</h2>
             <form id="loginForm">
                 <div class="form-group">
-                    <label><i class="fa-solid fa-envelope"></i> E-mail do Administrador</label>
-                    <input type="email" id="loginEmail" required placeholder="admin@seuemail.com">
+                    <label><i class="fa-solid fa-envelope"></i> E-mail Autenticado</label>
+                    <input type="email" id="loginEmail" required placeholder="seu-email@provedor.com">
                 </div>
                 <div class="form-group">
                     <label><i class="fa-solid fa-key"></i> Senha</label>
                     <input type="password" id="loginPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-download" style="width: 100%; margin-top: 10px;">Entrar no Painel</button>
+                <button type="submit" class="btn-download" style="width: 100%; margin-top: 10px;">Autenticar no Firebase</button>
             </form>
         </div>
     </div>
 
     <section class="admin-panel hidden" id="adminPanel">
         <div class="admin-header">
-            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador Estruturado StreamHub</h2>
+            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador Total Style StreamHub</h2>
             <button id="btnCloseAdmin" class="btn-close-panel">&times;</button>
         </div>
         
         <div class="admin-actions">
             <button id="btnNewPatch" class="btn-neon"><i class="fa-solid fa-plus"></i> Novo Patch</button>
-            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar Backup JSON</button>
-            <button id="btnImportJSON" class="btn-secondary"><i class="fa-solid fa-upload"></i> Importar JSON</button>
+            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar Banco Completo</button>
+            <button id="btnImportJSON" class="btn-secondary"><i class="fa-solid fa-upload"></i> Importar JSON (.json)</button>
             <input type="file" id="fileImport" accept=".json" style="display: none;">
         </div>
 
@@ -95,7 +93,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Título do Jogo</label>
-                        <input type="text" id="inputTitle" required placeholder="Ex: Resident Evil 4">
+                        <input type="text" id="inputTitle" required placeholder="Ex: Pro Evolution Soccer 2026">
                     </div>
                 </div>
                 <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -105,7 +103,7 @@
                     </div>
                     <div class="form-group">
                         <label>Categoria</label>
-                        <input type="text" id="inputCategory" required placeholder="Ex: Terror / Ação">
+                        <input type="text" id="inputCategory" required placeholder="Ex: Futebol">
                     </div>
                 </div>
                 <div class="form-group">
@@ -118,17 +116,16 @@
                 </div>
                 <div class="form-group">
                     <label>Descrição do Patch</label>
-                    <textarea id="inputDescription" rows="3" required placeholder="Modificações inclusas no patch..."></textarea>
+                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as modificações..."></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="btn-neon">Salvar Alterações</button>
+                    <button type="submit" class="btn-neon">Salvar Dados</button>
                     <button type="button" id="btnCancelForm" class="btn-secondary">Cancelar</button>
                 </div>
             </form>
         </div>
 
-        <div class="tree-manager" id="treeManager">
-            </div>
+        <div class="tree-manager" id="treeManager"></div>
     </section>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
