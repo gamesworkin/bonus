@@ -3,51 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patch Hub - Gamer Space</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>Hub de Patches e Mods</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos básicos para o funcionamento do Modal e Grid (Substitua ou adapte ao seu CSS antigo) */
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: #121212; 
+            color: #fff; 
+            margin: 0; 
+            padding: 20px; 
+            user-select: none; 
+        }
+        .games-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 20px; 
+            padding: 20px; 
+        }
+        .game-card { 
+            background: #1e1e1e; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+        }
+        .game-card:hover { 
+            transform: scale(1.05); 
+        }
+        .game-cover { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+        }
+        .game-info { 
+            padding: 15px; 
+        }
+        .badge { 
+            background: #00bcd4; 
+            color: #000; 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            font-weight: bold; 
+        }
+        .badge.purple { 
+            background: #9c27b0; 
+            color: #fff; 
+        }
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.3s; 
+        }
+        .modal-overlay.open { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .modal-content { 
+            background: #1a1a1a; 
+            padding: 30px; 
+            border-radius: 12px; 
+            max-width: 600px; 
+            width: 90%; 
+            position: relative; 
+        }
+        .close-button { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: none; 
+            border: none; 
+            color: #fff; 
+            font-size: 24px; 
+            cursor: pointer; 
+        }
+        .modal-body { 
+            display: flex; 
+            gap: 20px; 
+        }
+        .modal-cover { 
+            width: 180px; 
+            height: 240px; 
+            object-fit: cover; 
+            border-radius: 6px; 
+        }
+        .modal-right { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
+        .modal-title { 
+            margin: 0 0 10px 0; 
+            font-size: 24px; 
+        }
+        .modal-badges { 
+            margin-bottom: 15px; 
+            display: flex; 
+            gap: 8px; 
+        }
+        .modal-description { 
+            color: #aaa; 
+            margin-bottom: 20px; 
+            line-height: 1.5; 
+        }
+        .btn-download { 
+            display: inline-block; 
+            background: #6200ea; 
+            color: #fff; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            text-align: center; 
+            transition: background 0.2s; 
+        }
+        .btn-download:hover { 
+            background: #3700b3; 
+        }
+    </style>
 </head>
 <body>
 
-    <canvas id="particleCanvas"></canvas>
+    <div id="gamesGrid" class="games-grid"></div>
 
-    <header>
-        <div class="logo">
-            <i class="fa-solid fa-gamepad"></i> <span>PATCH<span class="neon-text">HUB</span></span>
-        </div>
-        <nav>
-            <ul id="categoryMenu">
-                <li class="active" data-category="all">Todas as Categorias</li>
-            </ul>
-        </nav>
-        <div class="admin-toggle">
-            <button id="btnToggleAdmin" class="btn-neon"><i class="fa-solid fa-lock"></i> Painel Admin</button>
-            <button id="btnLogout" class="btn-secondary hidden"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
-        </div>
-    </header>
-
-    <main class="container">
-        <div class="platform-filters" id="platformFiltersContainer"></div>
-
-        <section class="games-mosaic" id="gamesMosaic"></section>
-    </main>
-
-    <div class="modal" id="gameModal">
+    <div id="gameModal" class="modal-overlay">
         <div class="modal-content">
-            <span class="close-modal" id="btnCloseGameModal">&times;</span>
+            <button id="closeModalBtn" class="close-button" aria-label="Fechar Modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
             <div class="modal-body">
-                <div class="modal-cover-wrapper">
-                    <img id="modalCover" src="" alt="Capa do Jogo">
+                <div class="modal-left">
+                    <img id="modalCover" src="" alt="Capa do Jogo" class="modal-cover">
                 </div>
-                <div class="modal-info">
-                    <div>
-                        <h2 id="modalTitle">Título do Jogo</h2>
-                        <div id="modalBadgeContainer" style="margin-bottom: 15px;"></div>
-                        <p id="modalDescription">Descrição do patch...</p>
-                    </div>
-                    <a id="modalDownloadBtn" href="#" target="_blank" class="btn-download">
+                <div class="modal-right">
+                    <h2 id="modalTitle" class="modal-title"></h2>
+                    <div id="modalBadgeContainer" class="modal-badges"></div>
+                    <p id="modalDescription" class="modal-description"></p>
+                    
+                    <a id="modalDownloadBtn" href="#" download class="btn-download">
                         <i class="fa-solid fa-cloud-arrow-down"></i> BAIXAR AGORA
                     </a>
                 </div>
@@ -55,83 +159,6 @@
         </div>
     </div>
 
-    <div class="modal" id="loginModal">
-        <div class="modal-content login-content">
-            <span class="close-modal" id="btnCloseLoginModal">&times;</span>
-            <h2 class="neon-text" style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">Painel de Controle</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-envelope"></i> E-mail Autenticado</label>
-                    <input type="email" id="loginEmail" required placeholder="seu-email@provedor.com">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-solid fa-key"></i> Senha</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-download" style="width: 100%; margin-top: 10px;">Autenticar no Firebase</button>
-            </form>
-        </div>
-    </div>
-
-    <section class="admin-panel hidden" id="adminPanel">
-        <div class="admin-header">
-            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador Total Style StreamHub</h2>
-            <button id="btnCloseAdmin" class="btn-close-panel">&times;</button>
-        </div>
-        
-        <div class="admin-actions">
-            <button id="btnNewPatch" class="btn-neon"><i class="fa-solid fa-plus"></i> Novo Patch</button>
-            <button id="btnExportJSON" class="btn-secondary"><i class="fa-solid fa-download"></i> Exportar Banco Completo</button>
-            <button id="btnImportJSON" class="btn-secondary"><i class="fa-solid fa-upload"></i> Importar JSON (.json)</button>
-            <input type="file" id="fileImport" accept=".json" style="display: none;">
-        </div>
-
-        <div id="patchFormContainer" class="form-container hidden">
-            <h3 id="formTitle" style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px; color: var(--accent-neon);">Adicionar Novo Conteúdo</h3>
-            <form id="patchForm">
-                <input type="hidden" id="patchId">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Título do Jogo</label>
-                        <input type="text" id="inputTitle" required placeholder="Ex: Pro Evolution Soccer 2026">
-                    </div>
-                </div>
-                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label>Plataforma</label>
-                        <input type="text" id="inputPlatform" required placeholder="Ex: PlayStation 2">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <input type="text" id="inputCategory" required placeholder="Ex: Futebol">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>URL da Capa</label>
-                    <input type="url" id="inputCover" required placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label>Link de Download</label>
-                    <input type="url" id="inputDownload" required placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label>Descrição do Patch</label>
-                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as modificações..."></textarea>
-                </div>
-                <div class="form-buttons">
-                    <button type="submit" class="btn-neon">Salvar Dados</button>
-                    <button type="button" id="btnCancelForm" class="btn-secondary">Cancelar</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="tree-manager" id="treeManager"></div>
-    </section>
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
