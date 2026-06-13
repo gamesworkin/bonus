@@ -35,6 +35,30 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .game-card:hover .game-hover-desc { opacity: 1; transform: translateY(0); }
 .game-title { padding: 14px 10px; font-size: 16px; font-weight: 700; text-align: center; background: #090914; border-top: 1px solid rgba(255,255,255,0.02); }
 
+.game-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Garante que o título fique sempre alinhado na base */
+    height: 100%; /* Mantém os cards com tamanhos iguais na mesma linha */
+    position: relative; /* Necessário para o novo balão de descrição */
+}
+
+.game-cover-wrapper {
+    width: 100%;
+    height: 250px; /* Fixa uma altura padrão perfeita para capas de jogos */
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+    background-color: #111; /* Fundo escuro caso a imagem não preencha tudo */
+}
+
+.game-cover-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta e adapta a imagem proporcionalmente sem distorcer */
+}
+
+
 .badge { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; text-transform: uppercase; border-radius: 4px; margin-right: 8px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--accent-neon); color: var(--accent-neon); }
 .badge.purple { background: rgba(157, 78, 221, 0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
 
