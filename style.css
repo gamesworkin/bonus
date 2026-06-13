@@ -266,8 +266,8 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
     .games-mosaic { 
-        columns: 3 100px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
-        column-gap: 20px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
+        columns: 3 95px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
+        column-gap: 12px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
     }
     /* Esconde o balão flutuante no mobile para não atrapalhar o toque na tela */
     .game-tooltip {
