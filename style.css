@@ -29,7 +29,16 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .games-mosaic { columns: 5 200px; column-gap: 25px; }
 .game-card { break-inside: avoid; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s; }
 .game-card:hover { transform: translateY(-5px); border-color: var(--accent-neon); box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15); }
-.game-cover-wrapper { width: 100%; position: relative; }
+.game-cover-wrapper {
+    width: 100%;
+    /* Removemos a altura de 250px fixa para não esticar no mobile */
+    aspect-ratio: 2 / 3;    /* Mantém a proporção perfeita de uma capa vertical padrão (Largura / Altura) */
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+    background-color: #111; 
+}
+
 .game-cover-wrapper img { width: 100%; height: auto; display: block; }
 /* Remove o efeito antigo de cobrir o card */
 .game-hover-desc {
@@ -266,8 +275,8 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
     .games-mosaic { 
-        columns: 3 95px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
-        column-gap: 12px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
+        columns: 3 80px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
+        column-gap: 8px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
     }
     /* Esconde o balão flutuante no mobile para não atrapalhar o toque na tela */
     .game-tooltip {
