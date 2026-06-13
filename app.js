@@ -163,16 +163,43 @@ function renderApp() {
 
         if (matchCategory && matchPlatform) {
             const card = document.createElement('div');
-            card.className = 'game-card';
-            card.innerHTML = `
-                <div class="game-cover-wrapper">
-                    <img src="${item.cover}" alt="${item.title}" loading="lazy">
-                    <div class="game-hover-desc">${item.description}</div>
-                </div>
-                <div class="game-title">${item.title}</div>
-            `;
-            card.addEventListener('click', () => openModal(item));
-            gamesMosaic.appendChild(card);
+card.className = 'game-card';
+card.innerHTML = `
+    <div class="game-cover-wrapper">
+        <img src="${item.cover}" alt="${item.title}" loading="lazy">
+    </div>
+    <div class="game-title">${item.title}</div>
+    <div class="game-tooltip">${item.description}</div>
+`;
+
+// Variável para guardar o cronômetro de cada card
+let hoverTimeout;
+
+card.addEventListener('mouseenter', () => {
+    const tooltip = card.querySelector('.game-tooltip');
+    // Dispara o cronômetro para esperar exatamente 2 segundos (2000 milissegundos)
+    hoverTimeout = setTimeout(() => {
+        if (tooltip) tooltip.classList.add('show');
+    }, 2000);
+});
+
+card.addEventListener('mouseleave', () => {
+    // Se o usuário tirar o mouse antes dos 2 segundos, cancela o cronômetro e esconde
+    clearTimeout(hoverTimeout);
+    const tooltip = card.querySelector('.game-tooltip');
+    if (tooltip) tooltip.classList.remove('show');
+});
+
+card.addEventListener('click', () => {
+    // Garante que o balão suma imediatamente se o usuário clicar para abrir o jogo
+    clearTimeout(hoverTimeout);
+    const tooltip = card.querySelector('.game-tooltip');
+    if (tooltip) tooltip.classList.remove('show');
+    openModal(item);
+});
+
+gamesMosaic.appendChild(card);
+
         }
     });
 
