@@ -113,15 +113,17 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .close-modal:hover { color: #fff; }
 .modal-body {
     display: flex;
-    flex-direction: column; /* Força tudo a ficar na vertical: capa em cima, info embaixo */
-    gap: 20px;
-    align-items: center;    /* Centraliza os elementos no modal */
+    flex-direction: column; 
+    gap: 35px;              /* Aumentou a distância geral entre a capa e o bloco de informações */
+    align-items: center;    
+    padding: 10px 0;        /* Adiciona um respiro interno extra no topo e na base */
 }
 
 .modal-cover-wrapper {
     width: 100%;
-    max-width: 350px;       /* Limita um tamanho máximo seguro para a capa não explodir no monitor */
+    max-width: 420px;       /* Capa exatamente 20% maior (de 350px para 420px) para dar mais destaque */
     height: auto;
+    margin-bottom: 5px;     /* Força uma distância extra na base da imagem */
 }
 .modal-cover-wrapper { width: 200px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
 .modal-cover-wrapper img { width: 100%; height: auto; }
@@ -129,8 +131,8 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    text-align: center;     /* Centraliza os textos do modal para combinar com o novo layout */
+    gap: 25px;              /* Cria um espaçamento interno maior e muito mais elegante entre o título, a descrição e o botão */
+    text-align: center;     
 }
 
 /* Centraliza também os badges (plataforma e categoria) se necessário */
