@@ -31,7 +31,39 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .game-card:hover { transform: translateY(-5px); border-color: var(--accent-neon); box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15); }
 .game-cover-wrapper { width: 100%; position: relative; }
 .game-cover-wrapper img { width: 100%; height: auto; display: block; }
-.game-hover-desc { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(5,5,11,0.98) 35%); padding: 20px 15px 15px 15px; font-size: 14px; color: #fff; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
+/* Remove o efeito antigo de cobrir o card */
+.game-hover-desc {
+    display: none !important; 
+}
+
+/* Novo Balão Flutuante de Descrição */
+.game-tooltip {
+    position: absolute;
+    bottom: 105%; /* Aparece logo acima do card */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 15, 26, 0.95);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--accent-neon, #00f0ff);
+    font-size: 0.85rem;
+    width: 220px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    line-height: 1.4;
+    text-align: left;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+/* Classe dinâmica que o JavaScript vai ativar após 2 segundos */
+.game-tooltip.show {
+    opacity: 1;
+}
+
 .game-card:hover .game-hover-desc { opacity: 1; transform: translateY(0); }
 .game-title { padding: 14px 10px; font-size: 16px; font-weight: 700; text-align: center; background: #090914; border-top: 1px solid rgba(255,255,255,0.02); }
 
@@ -199,8 +231,12 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
     .games-mosaic { 
-        columns: 3 100px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
+        columns: 2 120px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
         column-gap: 15px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
+    }
+    /* Esconde o balão flutuante no mobile para não atrapalhar o toque na tela */
+    .game-tooltip {
+        display: none !important;
     }
 }
 
