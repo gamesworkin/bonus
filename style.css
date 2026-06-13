@@ -138,6 +138,20 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     gap: 35px;              /* Aumentou a distância geral entre a capa e o bloco de informações */
     align-items: center;    
     padding: 10px 0;        /* Adiciona um respiro interno extra no topo e na base */
+
+    /* Regras cirúrgicas para esconder a barra de rolagem mantendo o scroll funcional */
+    max-height: 80vh;          /* Define uma altura máxima segura baseada na tela do usuário */
+    overflow-y: auto;          /* Ativa o scroll apenas se o conteúdo for maior que a janela */
+    scrollbar-width: none;     /* Oculta a barra de rolagem nativa no Firefox */
+    -ms-overflow-style: none;  /* Oculta a barra de rolagem nativa no antigo Internet Explorer/Edge */
+}
+
+/* Oculta a barra de rolagem nativa no Chrome, Safari, Opera e novas versões do Edge */
+.modal-body::-webkit-scrollbar {
+    display: none;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent;
 }
 
 .modal-cover-wrapper {
