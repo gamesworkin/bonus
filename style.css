@@ -26,7 +26,13 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .btn-tab { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-color); padding: 10px 22px; cursor: pointer; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; border-radius: 4px; }
 .btn-tab.active, .btn-tab:hover { background: var(--accent-purple); border-color: var(--accent-purple); box-shadow: 0 0 15px var(--accent-purple); }
 
-.games-mosaic { columns: 5 200px; column-gap: 25px; }
+.games-mosaic {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Cria colunas automáticas perfeitas no desktop */
+    gap: 25px; /* Define um espaçamento fixo e idêntico entre todos os blocos */
+    width: 100%;
+}
+
 .game-card { break-inside: avoid; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s; }
 .game-card:hover { transform: translateY(-5px); border-color: var(--accent-neon); box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15); }
 .game-cover-wrapper {
@@ -39,7 +45,13 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     background-color: #111; 
 }
 
-.game-cover-wrapper img { width: 100%; height: auto; display: block; }
+.game-cover-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta as bordas de imagens horizontais para que elas preencham o formato vertical sem distorcer e sem deixar espaços em branco */
+    object-position: center; /* Mantém o foco do recorte sempre no centro da imagem */
+}
+
 /* Remove o efeito antigo de cobrir o card */
 .game-hover-desc {
     display: none !important; 
@@ -275,8 +287,9 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
     .games-mosaic { 
-        columns: 3 80px; /* Garante 3 colunas fluidas e reduz o tamanho mínimo de quebra */
-        column-gap: 8px; /* Deixa o espaçamento lateral ligeiramente menor no celular para caber tudo bem alinhado */
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Força rigorosamente 3 colunas idênticas por linha no mobile */
+        gap: 10px; /* Mantém um espaçamento sutil e elegante entre os cards no celular */
     }
     /* Esconde o balão flutuante no mobile para não atrapalhar o toque na tela */
     .game-tooltip {
