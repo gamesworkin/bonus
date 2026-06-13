@@ -125,9 +125,20 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 }
 .modal-cover-wrapper { width: 200px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
 .modal-cover-wrapper img { width: 100%; height: auto; }
-.modal-info { display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1;}
-.modal-info h2 { font-family: 'Orbitron', sans-serif; margin-bottom: 8px; color: #fff; }
-.modal-info p { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+.modal-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;     /* Centraliza os textos do modal para combinar com o novo layout */
+}
+
+/* Centraliza também os badges (plataforma e categoria) se necessário */
+#modalBadgeContainer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
 
 .btn-neon { background: transparent; border: 2px solid var(--accent-neon); color: var(--accent-neon); padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: all 0.3s; }
 .btn-neon:hover { background: var(--accent-neon); color: #000; box-shadow: 0 0 20px var(--accent-neon); }
