@@ -64,8 +64,19 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     opacity: 1;
 }
 
-.game-card:hover .game-hover-desc { opacity: 1; transform: translateY(0); }
-.game-title { padding: 14px 10px; font-size: 16px; font-weight: 700; text-align: center; background: #090914; border-top: 1px solid rgba(255,255,255,0.02); }
+.game-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 10px;
+    text-align: center;
+    /* Novas regras cirúrgicas para os três pontos */
+    white-space: nowrap;      /* Força o título a ficar em uma única linha */
+    overflow: hidden;         /* Esconde o que passar do limite do card */
+    text-overflow: ellipsis;  /* Aplica o efeito visual dos três pontos (...) */
+    width: 100%;              /* Garante que respeite a largura total do card */
+}
+
 
 .game-card {
     display: flex;
@@ -100,7 +111,18 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 .login-content { max-width: 400px; border-color: var(--accent-neon); box-shadow: 0 0 35px rgba(0, 240, 255, 0.25); }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted); z-index: 10; }
 .close-modal:hover { color: #fff; }
-.modal-body { display: flex; gap: 25px; }
+.modal-body {
+    display: flex;
+    flex-direction: column; /* Força tudo a ficar na vertical: capa em cima, info embaixo */
+    gap: 20px;
+    align-items: center;    /* Centraliza os elementos no modal */
+}
+
+.modal-cover-wrapper {
+    width: 100%;
+    max-width: 350px;       /* Limita um tamanho máximo seguro para a capa não explodir no monitor */
+    height: auto;
+}
 .modal-cover-wrapper { width: 200px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
 .modal-cover-wrapper img { width: 100%; height: auto; }
 .modal-info { display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1;}
