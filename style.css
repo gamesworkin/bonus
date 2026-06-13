@@ -298,6 +298,32 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     background-color: #20ba5a;
 }
 
+/* Remove a barra de rolagem da Central de Ajuda mantendo a rolagem ativa */
+.help-scroll-body {
+    scrollbar-width: none;     /* Oculta no Firefox */
+    -ms-overflow-style: none;  /* Oculta no Edge antigo */
+}
+
+/* Oculta a barra no Chrome, Safari, Opera e novas versões do Edge */
+.help-scroll-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+/* Garante que a caixinha do modal também não crie barras secundárias */
+.help-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.help-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+}
+
+
 /* Tratamento de Responsividade Mobile Completa */
 @media (max-width: 900px) {
     .games-mosaic { 
