@@ -15,16 +15,22 @@
 
     <header>
         <div class="logo">
-            <i class="fa-solid fa-gamepad"></i> <span>WORKIN'<span class="neon-text">STORE</span></span>
+            <i class="fa-solid fa-gamepad"></i> <span>Workin'<span class="neon-text">Store</span></span>
         </div>
-        <nav>
+        
+        <button id="btnMenuToggle" class="btn-menu-toggle">
+            Categorias <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <nav id="navMenu">
             <ul id="categoryMenu">
                 <li class="active" data-category="all">Todas as Categorias</li>
             </ul>
         </nav>
+        
         <div class="admin-toggle">
             <button id="btnHelp" class="btn-secondary" style="margin-right: 10px;"><i class="fa-solid fa-circle-question"></i> Ajuda</button>
-            <button id="btnToggleAdmin" class="btn-neon"><i class="fa-solid fa-lock"></i> ACESSO RESTRITO</button>
+            <button id="btnToggleAdmin" class="btn-neon"><i class="fa-solid fa-lock"></i> Painel Admin</button>
             <button id="btnLogout" class="btn-secondary hidden"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
         </div>
     </header>
@@ -46,7 +52,7 @@
                     <div>
                         <h2 id="modalTitle">Título do Jogo</h2>
                         <div id="modalBadgeContainer" style="margin-bottom: 15px;"></div>
-                        <p id="modalDescription">Descrição do jogo...</p>
+                        <p id="modalDescription">Descrição do Jogo...</p>
                     </div>
                     <a id="modalDownloadBtn" href="#" download class="btn-download">
                         <i class="fa-solid fa-cloud-arrow-down"></i> BAIXAR AGORA
@@ -64,7 +70,7 @@
                 <h3 style="color: var(--accent-neon); margin-top: 15px;">💾 Como baixar os jogos?</h3>
                 <p style="color: #7e7e94; margin-top: 5px; line-height: 1.5;">Navegue pelas categorias superiores ou filtre pelas plataformas. Ao clicar no card do jogo desejado, as informações detalhadas se abrirão e você poderá clicar em "Baixar Agora" para iniciar o download direto instantaneamente. Após o download, extraia o jogo e ponha na pasta DVD do seu pen-drive para rodar no opl. E para as capas, atualize a sua pasta ART do pen-drive pela pasta ART que irá compactada com o jogo. OBS: Alguns jogos já virão em .ISO não sendo preciso nenhuma extração, apenas jogar na pasta DVD do pendrive.</p>
                 
-                <h3 style="color: var(--accent-neon); margin-top: 15px;">🕹️ Jogos de PlayStation 1, como faço?</h3>
+                <h3 style="color: var(--accent-neon); margin-top: 15px;">🕹️ E o PlayStation 1, como faço?</h3>
                 <p style="color: #7e7e94; margin-top: 5px; line-height: 1.5;">Para baixar os jogos de PlayStation 1, siga os mesmos passos do PlayStation 2, mas, atente-se de por o arquivo VCD (arquivo ROM) na pasta POPS do seu pen-drive, atualizar a pasta APPS do seu pendrive por a que vai no arquivo zipado, para capas da mesma forma, atualize sua pasta ART pela que vai no arquivo compactado.</p>
             </div>
         </div>
@@ -83,14 +89,14 @@
                     <label><i class="fa-solid fa-key"></i> Senha</label>
                     <input type="password" id="loginPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-download" style="width: 100%; margin-top: 10px;">ENTRAR</button>
+                <button type="submit" id="btnLoginSubmit" class="btn-download" style="width: 100%; margin-top: 10px;">Acessar como ADMIN</button>
             </form>
         </div>
     </div>
 
     <section class="admin-panel hidden" id="adminPanel">
         <div class="admin-header">
-            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador completo</h2>
+            <h2><i class="fa-solid fa-folder-tree"></i> Gerenciador Total</h2>
             <button id="btnCloseAdmin" class="btn-close-panel">&times;</button>
         </div>
         
@@ -131,7 +137,7 @@
                 </div>
                 <div class="form-group">
                     <label>Descrição do Jogo</label>
-                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as informações..."></textarea>
+                    <textarea id="inputDescription" rows="3" required placeholder="Descreva as modificações..."></textarea>
                 </div>
                 <div class="form-buttons">
                     <button type="submit" class="btn-neon">Salvar Dados</button>
