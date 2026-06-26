@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 // Configuração do WhatsApp Real
 const WHATSAPP_NUMBER = "5588988470190"; 
-const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre os patches.";
+const WHATSAPP_MESSAGE = "Olá! Tenho uma dúvida sobre os Jogos.";
 
 // Inicialização Estrita
 firebase.initializeApp(firebaseConfig);
