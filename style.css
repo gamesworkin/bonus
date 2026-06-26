@@ -1,66 +1,242 @@
-/* Mantenha o arquivo anterior e certifique-se de incluir/atualizar as regras abaixo */
 :root {
-    --bg-color: #05050b;
-    --panel-bg: rgba(12, 12, 24, 0.95);
+    --bg-dark: #07070c;
+    --card-bg: #0f0f1a;
     --accent-neon: #00f0ff;
     --accent-purple: #9d4edd;
-    --text-color: #f0f0f5;
+    --text-main: #f0f0f5;
     --text-muted: #7e7e94;
-    --whatsapp-color: #25d366; /* Nova variável para a cor do WhatsApp */
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; }
-body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
-#particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
 
-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(5, 5, 11, 0.85); backdrop-filter: blur(12px); border-bottom: 2px solid rgba(157, 78, 221, 0.25); position: sticky; top: 0; z-index: 100; }
-.logo { font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: bold; letter-spacing: 2px; }
-.neon-text { color: var(--accent-neon); text-shadow: 0 0 10px var(--accent-neon); }
-nav ul { display: flex; list-style: none; gap: 15px; flex-wrap: wrap; }
-nav ul li { font-family: 'Orbitron', sans-serif; text-transform: uppercase; font-size: 13px; padding: 6px 12px; cursor: pointer; transition: all 0.3s; border-bottom: 2px solid transparent; color: var(--text-muted); }
-nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2px solid var(--accent-neon); text-shadow: 0 0 8px var(--accent-neon); }
-.admin-toggle { display: flex; gap: 10px; align-items: center; }
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
 
-.container { padding: 30px 5%; }
-.platform-filters { margin-bottom: 35px; display: flex; gap: 12px; flex-wrap: wrap; }
-.btn-tab { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-color); padding: 10px 22px; cursor: pointer; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; border-radius: 4px; }
-.btn-tab.active, .btn-tab:hover { background: var(--accent-purple); border-color: var(--accent-purple); box-shadow: 0 0 15px var(--accent-purple); }
+canvas#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+header {
+    background: rgba(15, 15, 26, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.neon-text {
+    color: var(--accent-neon);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav ul li {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+
+nav ul li:hover, nav ul li.active {
+    color: var(--accent-neon);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.btn-menu-toggle {
+    display: none;
+    font-family: 'Orbitron', sans-serif;
+    background: transparent;
+    border: 1px solid var(--accent-neon);
+    color: var(--accent-neon);
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-menu-toggle i {
+    transition: transform 0.3s ease;
+}
+
+.btn-menu-toggle.open i {
+    transform: rotate(180deg);
+}
+
+.admin-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.btn-neon {
+    background: transparent;
+    border: 1px solid var(--accent-neon);
+    color: var(--accent-neon);
+    font-family: 'Orbitron', sans-serif;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-neon:hover:not(:disabled) {
+    background: var(--accent-neon);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+.btn-neon:disabled {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.platform-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-tab {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-tab:hover, .btn-tab.active {
+    border-color: var(--accent-purple);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+}
 
 .games-mosaic {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Cria colunas automáticas perfeitas no desktop */
-    gap: 25px; /* Define um espaçamento fixo e idêntico entre todos os blocos */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
     width: 100%;
 }
 
-.game-card { break-inside: avoid; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s; }
-.game-card:hover { transform: translateY(-5px); border-color: var(--accent-neon); box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15); }
+.game-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 10px 20px rgba(0, 240, 255, 0.05);
+}
+
 .game-cover-wrapper {
     width: 100%;
-    /* Removemos a altura de 250px fixa para não esticar no mobile */
-    aspect-ratio: 2 / 3;    /* Mantém a proporção perfeita de uma capa vertical padrão (Largura / Altura) */
+    aspect-ratio: 2 / 3;
     overflow: hidden;
     position: relative;
     border-radius: 8px;
-    background-color: #111; 
+    background-color: #111;
 }
 
 .game-cover-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Recorta as bordas de imagens horizontais para que elas preencham o formato vertical sem distorcer e sem deixar espaços em branco */
-    object-position: center; /* Mantém o foco do recorte sempre no centro da imagem */
+    object-fit: cover;
+    object-position: center;
 }
 
-/* Remove o efeito antigo de cobrir o card */
-.game-hover-desc {
-    display: none !important; 
+.game-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 10px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
-/* Novo Balão Flutuante de Descrição */
 .game-tooltip {
     position: absolute;
-    bottom: 105%; /* Aparece logo acima do card */
+    bottom: 105%;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(15, 15, 26, 0.95);
@@ -80,138 +256,270 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
     font-family: 'Rajdhani', sans-serif;
 }
 
-/* Classe dinâmica que o JavaScript vai ativar após 2 segundos */
 .game-tooltip.show {
     opacity: 1;
 }
 
-.game-title {
-    font-family: 'Orbitron', sans-serif;
-    color: #fff;
-    font-size: 1rem;
-    margin-top: 10px;
-    text-align: center;
-    /* Novas regras cirúrgicas para os três pontos */
-    white-space: nowrap;      /* Força o título a ficar em uma única linha */
-    overflow: hidden;         /* Esconde o que passar do limite do card */
-    text-overflow: ellipsis;  /* Aplica o efeito visual dos três pontos (...) */
-    width: 100%;              /* Garante que respeite a largura total do card */
-}
-
-
-.game-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Garante que o título fique sempre alinhado na base */
-    height: 100%; /* Mantém os cards com tamanhos iguais na mesma linha */
-    position: relative; /* Necessário para o novo balão de descrição */
-}
-
-.game-cover-wrapper {
-    width: 100%;
-    height: 250px; /* Fixa uma altura padrão perfeita para capas de jogos */
-    overflow: hidden;
-    position: relative;
-    border-radius: 8px;
-    background-color: #111; /* Fundo escuro caso a imagem não preencha tudo */
-}
-
-.game-cover-wrapper img {
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Recorta e adapta a imagem proporcionalmente sem distorcer */
-}
-
-
-.badge { display: inline-block; padding: 4px 10px; font-size: 12px; font-weight: bold; text-transform: uppercase; border-radius: 4px; margin-right: 8px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--accent-neon); color: var(--accent-neon); }
-.badge.purple { background: rgba(157, 78, 221, 0.15); border: 1px solid var(--accent-purple); color: var(--accent-purple); }
-
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 15px; }
-.modal.open { opacity: 1; pointer-events: auto; }
-.modal-content { background: var(--panel-bg); border: 2px solid var(--accent-purple); box-shadow: 0 0 35px rgba(157, 78, 221, 0.3); border-radius: 12px; width: 90%; max-width: 650px; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto; }
-.login-content { max-width: 400px; border-color: var(--accent-neon); box-shadow: 0 0 35px rgba(0, 240, 255, 0.25); }
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted); z-index: 10; }
-.close-modal:hover { color: #fff; }
-.modal-body {
-    display: flex;
-    flex-direction: column; 
-    gap: 35px;              /* Aumentou a distância geral entre a capa e o bloco de informações */
-    align-items: center;    
-    padding: 10px 0;        /* Adiciona um respiro interno extra no topo e na base */
-
-    /* Regras cirúrgicas para esconder a barra de rolagem mantendo o scroll funcional */
-    max-height: 80vh;          /* Define uma altura máxima segura baseada na tela do usuário */
-    overflow-y: auto;          /* Ativa o scroll apenas se o conteúdo for maior que a janela */
-    scrollbar-width: none;     /* Oculta a barra de rolagem nativa no Firefox */
-    -ms-overflow-style: none;  /* Oculta a barra de rolagem nativa no antigo Internet Explorer/Edge */
-}
-
-/* Oculta a barra de rolagem nativa no Chrome, Safari, Opera e novas versões do Edge */
-.modal-body::-webkit-scrollbar {
-    display: none;
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent;
-}
-
-.modal-cover-wrapper {
-    width: 100%;
-    max-width: 420px;       /* Capa exatamente 20% maior (de 350px para 420px) para dar mais destaque */
-    height: auto;
-    margin-bottom: 5px;     /* Força uma distância extra na base da imagem */
-}
-.modal-cover-wrapper { width: 200px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
-.modal-cover-wrapper img { width: 100%; height: auto; }
-.modal-info {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;              /* Cria um espaçamento interno maior e muito mais elegante entre o título, a descrição e o botão */
-    text-align: center;     
-}
-
-/* Centraliza também os badges (plataforma e categoria) se necessário */
-#modalBadgeContainer {
+    background: rgba(5, 5, 10, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Modificado para encaixar com precisão no desktop */
+.modal-content {
+    background: #0d0d18;
+    border: 1px solid rgba(157, 78, 221, 0.2);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 650px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    scrollbar-width: none !important;
+}
+
+.modal-content::-webkit-scrollbar, .modal-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.close-modal:hover {
+    color: #fff;
+}
+
+/* Disposição lado a lado no desktop para eliminar barra de rolagem */
+.modal-body {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Tamanho controlado da capa no desktop */
+.modal-cover-wrapper {
+    width: 100%;
+    max-width: 240px;
+    flex-shrink: 0;
+}
+
+.modal-cover-wrapper img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+    display: block;
+}
+
+/* Informações alinhadas à esquerda no desktop */
+.modal-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    text-align: left;
+    height: 100%;
+}
+
+#modalBadgeContainer {
+    display: flex;
+    justify-content: flex-start;
     gap: 10px;
 }
 
-.btn-neon { background: transparent; border: 2px solid var(--accent-neon); color: var(--accent-neon); padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: all 0.3s; }
-.btn-neon:hover { background: var(--accent-neon); color: #000; box-shadow: 0 0 20px var(--accent-neon); }
-.btn-secondary { background: #1b1b2f; border: none; color: #fff; padding: 10px 20px; cursor: pointer; font-weight: bold; }
-.btn-secondary:hover { background: #2a2a44; }
-.btn-download { background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple)); color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: bold; text-decoration: none; text-align: center; border-radius: 4px; display: block; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.25); transition: all 0.2s; }
-.btn-download:hover { transform: scale(1.02); box-shadow: 0 6px 22px rgba(157, 78, 221, 0.4); }
+#modalTitle {
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 10px;
+    font-size: 1.6rem;
+}
 
-.admin-panel { position: fixed; top: 3%; right: 3%; bottom: 3%; left: 3%; background: #080811; border: 2px solid #1f1f33; z-index: 500; padding: 30px; overflow-y: auto; border-radius: 8px; }
-.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f1f33; padding-bottom: 15px;}
-.admin-header h2 { font-family: 'Orbitron', sans-serif; }
-.btn-close-panel { background: none; border: none; font-size: 32px; color: #fff; cursor: pointer; }
-.admin-actions { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
+#modalDescription {
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
 
-.form-container { background: #111122; padding: 25px; border-radius: 6px; margin-bottom: 30px; border: 1px solid #23233c; }
-.form-group { margin-bottom: 15px; display: flex; flex-direction: column; width: 100%; }
-.form-group label { margin-bottom: 6px; color: var(--text-muted); font-weight: bold; }
-.form-group input, .form-group textarea { background: #05050b; border: 1px solid #23233c; color: #fff; padding: 12px; border-radius: 4px; }
-.form-buttons { display: flex; gap: 10px; margin-top: 10px; }
+.btn-download {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--accent-neon), var(--accent-purple));
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0, 240, 255, 0.2);
+    transition: all 0.3s ease;
+    width: 100%;
+}
 
-.tree-node-platform { background: rgba(255,255,255,0.02); border: 1px solid #1e1e35; margin-bottom: 12px; border-radius: 6px; overflow: hidden; }
-.tree-handle { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; cursor: pointer; background: #111122; transition: background 0.2s; gap: 10px; }
-.tree-handle:hover { background: #171730; }
-.tree-handle h4 { font-family: 'Orbitron', sans-serif; font-size: 16px; display: flex; align-items: center; gap: 10px; }
-.tree-node-category { margin: 10px 20px; border-left: 2px dashed rgba(157, 78, 221, 0.4); padding-left: 15px; }
-.tree-cat-handle { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.01); cursor: pointer; font-weight: bold; font-size: 15px; gap: 10px; }
-.tree-cat-handle:hover { color: var(--accent-neon); }
-.tree-games-list { padding: 10px 0 10px 20px; }
-.tree-game-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 15px; gap: 10px; }
-.tree-game-item:hover { background: rgba(255,255,255,0.01); }
-.tree-game-info { display: flex; align-items: center; gap: 15px; }
-.tree-game-info img { width: 35px; height: 45px; object-fit: cover; border-radius: 4px; }
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(157, 78, 221, 0.4);
+    color: #fff;
+}
 
-.hidden { display: none !important; }
+.help-scroll-body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
 
-/* CSS Novo dos Botões de Atributo (Controle Total) */
+.help-scroll-body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+.help-content, .login-content {
+    max-width: 500px;
+}
+
+/* Modais específicos de help e login mantêm estrutura de coluna padrão */
+.help-content .modal-body, .login-content .modal-body {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 6px;
+    color: #fff;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-neon);
+}
+
+.admin-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 500px;
+    height: 100vh;
+    background: #090911;
+    border-left: 1px solid rgba(0, 240, 255, 0.15);
+    z-index: 900;
+    padding: 30px;
+    overflow-y: auto;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.admin-header h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+}
+
+.btn-close-panel {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.admin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.admin-actions button:first-child {
+    grid-column: span 2;
+}
+
+.form-container {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.tree-node-platform {
+    background: rgba(255,255,255,0.01);
+    border: 1px solid rgba(255,255,255,0.03);
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+.tree-handle {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
 .tree-controls-wrapper {
     display: flex;
     align-items: center;
@@ -220,135 +528,270 @@ nav ul li:hover, nav ul li.active { color: var(--accent-neon); border-bottom: 2p
 
 .tree-actions {
     display: flex;
-    gap: 6px;
+    gap: 5px;
 }
 
 .btn-action {
+    background: rgba(255,255,255,0.05);
+    border: none;
+    color: var(--text-main);
     width: 28px;
     height: 28px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     border-radius: 4px;
     cursor: pointer;
-    border: none;
-    color: #fff;
-    font-size: 12px;
-    transition: background 0.2s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
 }
 
-.btn-edit { background: #2563eb; }
-.btn-edit:hover { background: #1d4ed8; }
-.btn-delete { background: #dc2626; }
-.btn-delete:hover { background: #b91c1c; }
-.btn-export-mini { background: #16a34a; }
-.btn-export-mini:hover { background: #15803d; }
+.btn-action:hover { background: rgba(255,255,255,0.15); }
+.btn-edit:hover { color: var(--accent-neon); }
+.btn-delete:hover { color: #ff4d4d; }
 
 .tree-content {
     display: none;
-}
-.tree-content.open {
-    display: block;
+    padding: 0 15px 15px 15px;
 }
 
-/* ============================================================================
-   ESTILOS COMPLEMENTARES ADICIONADOS (MODAL AJUDA, WHATSAPP E RESPONSIVIDADE)
-   ============================================================================ */
+.tree-content.open { display: block; }
 
-/* Customização da janela e rolagem interna do Modal de Ajuda */
-.help-content {
-    max-width: 500px;
-    border-color: var(--accent-neon);
-    box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
+.tree-node-category {
+    border-left: 2px dashed rgba(157, 78, 221, 0.3);
+    margin-left: 10px;
+    margin-top: 10px;
 }
 
-.help-scroll-body::-webkit-scrollbar {
-    width: 6px;
+.tree-cat-handle {
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
 }
-.help-scroll-body::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
-}
-.help-scroll-body::-webkit-scrollbar-thumb {
-    background: var(--accent-purple);
+
+.tree-game-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.02);
+    margin-top: 5px;
+    margin-left: 20px;
     border-radius: 4px;
 }
 
-/* Botão Flutuante do WhatsApp */
+.tree-game-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tree-game-info img {
+    width: 30px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
 .whatsapp-float {
     position: fixed;
     width: 60px;
     height: 60px;
-    bottom: 25px;
-    right: 25px;
-    background-color: var(--whatsapp-color);
-    color: #FFF;
-    border-radius: 50px;
+    bottom: 40px;
+    right: 40px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50%;
     text-align: center;
     font-size: 30px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
-    z-index: 400;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    transition: transform 0.3s, background-color 0.3s;
+    transition: all 0.3s ease;
 }
+
 .whatsapp-float:hover {
     transform: scale(1.1);
     background-color: #20ba5a;
 }
 
-/* Remove a barra de rolagem da Central de Ajuda mantendo a rolagem ativa */
-.help-scroll-body {
-    scrollbar-width: none;     /* Oculta no Firefox */
-    -ms-overflow-style: none;  /* Oculta no Edge antigo */
+.badge {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--accent-neon);
+    color: var(--accent-neon);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: 'Orbitron', sans-serif;
 }
 
-/* Oculta a barra no Chrome, Safari, Opera e novas versões do Edge */
-.help-scroll-body::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent !important;
+.badge.purple {
+    background: rgba(157, 78, 221, 0.1);
+    border: 1px solid var(--accent-purple);
+    color: var(--accent-purple);
 }
 
-/* Garante que a caixinha do modal também não crie barras secundárias */
-.help-content {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
+.hidden { display: none !important; }
 
-.help-content::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-}
-
-
-/* Tratamento de Responsividade Mobile Completa */
+/* ============================================================================
+   MEDIA QUERIES - VERSÃO MOBILE RIGOROSAMENTE RESPONSIVA E CORRIGIDA
+   ============================================================================ */
 @media (max-width: 900px) {
-    .games-mosaic { 
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* Força rigorosamente 3 colunas idênticas por linha no mobile */
-        gap: 10px; /* Mantém um espaçamento sutil e elegante entre os cards no celular */
+    header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px 15px;
+        text-align: center;
     }
-    /* Esconde o balão flutuante no mobile para não atrapalhar o toque na tela */
+
+    .logo {
+        margin-bottom: 5px;
+    }
+
+    .btn-menu-toggle {
+        display: inline-flex;
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    nav {
+        width: 100%;
+        display: none;
+        margin: 5px 0;
+    }
+
+    nav.expanded {
+        display: block;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px;
+        background: rgba(15, 15, 26, 0.98);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    nav ul li {
+        padding: 10px 0;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    
+    nav ul li:last-child {
+        border-bottom: none;
+    }
+
+    .admin-toggle {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 5px;
+        flex-wrap: wrap;
+    }
+    
+    .admin-toggle button {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+
+    .container {
+        margin: 20px auto;
+    }
+
+    .platform-filters {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .btn-tab {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+
+    .games-mosaic { 
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    .game-card {
+        padding: 6px;
+        border-radius: 8px;
+    }
+
+    .game-cover-wrapper {
+        border-radius: 6px;
+    }
+    
+    .game-title {
+        font-size: 0.75rem;
+        margin-top: 6px;
+        letter-spacing: 0px;
+    }
+
+    /* Redimensionamento proporcional e empilhado para Mobile */
+    .modal-content {
+        width: 92% !important;
+        max-width: 380px !important;
+        padding: 25px 15px !important;
+        border-radius: 12px;
+    }
+
+    .modal-body {
+        flex-direction: column !important;
+        gap: 18px !important;
+        max-height: 75vh;
+        overflow-y: auto;
+    }
+
+    .modal-cover-wrapper {
+        max-width: 180px !important;
+    }
+
+    .modal-info {
+        gap: 15px !important;
+        text-align: center !important;
+    }
+
+    #modalBadgeContainer {
+        justify-content: center !important;
+    }
+
+    #modalTitle {
+        font-size: 1.2rem !important;
+    }
+
+    #modalDescription {
+        font-size: 0.9rem !important;
+        line-height: 1.4;
+    }
+
+    .btn-download {
+        padding: 12px 24px !important;
+        font-size: 0.9rem !important;
+        width: 100%;
+    }
+
+    .close-modal {
+        top: 10px;
+        right: 15px;
+        font-size: 1.8rem;
+    }
+
     .game-tooltip {
         display: none !important;
     }
-}
 
-
-@media (max-width: 768px) {
-    header { flex-direction: column; gap: 15px; padding: 20px; }
-    nav ul { justify-content: center; }
-    .admin-toggle { width: 100%; justify-content: center; }
-    .modal-body { flex-direction: column; align-items: center; text-align: center; }
-    .modal-cover-wrapper { width: 160px; }
-    .modal-info { gap: 15px; }
-    .admin-panel { top: 1%; right: 1%; bottom: 1%; left: 1%; padding: 15px; }
-    .admin-actions { justify-content: center; }
-    .tree-handle, .tree-cat-handle, .tree-game-item { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .tree-controls-wrapper { width: 100%; justify-content: space-between; }
-    .tree-game-item { align-items: center; }
-    .form-row { display: flex; flex-direction: column; gap: 0; }
+    .admin-panel {
+        width: 100%;
+    }
 }
