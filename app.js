@@ -620,12 +620,29 @@ $("#clearFilters").addEventListener("click", () => {
   renderGames();
 });
 
+/* Detecta pela resolucao da imagem se a capa e quadrada (CD) ou retangular (DVD) */
+function applyCoverShape(img) {
+  if (!img) return;
+  const box = img.parentElement;
+  if (!box) return;
+  const decide = () => {
+    const w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) return;
+    const ratio = w / h;
+    if (ratio > 0.85) box.classList.add("is-cd");
+    else box.classList.remove("is-cd");
+  };
+  box.classList.remove("is-cd");
+  if (img.complete && img.naturalWidth) decide();
+  img.onload = decide;
+}
+
 /* ================= MODAL DO JOGO ================= */
 function openGame(id) {
   const g = state.games.find((x) => x.id === id);
   if (!g) return;
   const cover = $("#gmCover");
-  if (g.cover) { loadHiddenImage(cover, g.cover); cover.alt = g.title || ""; cover.parentElement.hidden = false; }
+  if (g.cover) { applyCoverShape(cover); loadHiddenImage(cover, g.cover); cover.alt = g.title || ""; cover.parentElement.hidden = false; }
   else cover.parentElement.hidden = true;
 
   $("#gmTitle").textContent = g.title || "Sem título";

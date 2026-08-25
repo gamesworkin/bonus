@@ -269,6 +269,8 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
   border-radius: 12px; border: 1px solid var(--border);
 }
 .gm-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Capa quadrada (CD) detectada automaticamente pela resolucao da imagem */
+.gm-cover.is-cd { aspect-ratio: 1 / 1; max-width: 300px; }
 .gm-body { padding: 18px 20px 24px; }
 
 /* Desktop/tablet: capa a esquerda, informacoes + botao a direita */
@@ -283,6 +285,12 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
     width: 300px; max-width: 300px; margin: 0;
     border: 0; border-right: 1px solid var(--border); border-radius: 0;
     aspect-ratio: auto; min-height: 433px; -webkit-align-self: stretch; align-self: stretch;
+  }
+  .gm-cover.is-cd {
+    -webkit-flex: 0 0 320px; flex: 0 0 320px;
+    width: 320px; max-width: 320px;
+    aspect-ratio: 1 / 1; min-height: 0;
+    -webkit-align-self: flex-start; align-self: flex-start;
   }
   .gm-body {
     -webkit-flex: 1 1 auto; flex: 1 1 auto; min-width: 0;
@@ -407,6 +415,7 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
   .modal { padding: 18px 14px; max-width: 100%; }
   .modal-game { padding: 0; }
   .gm-cover { max-width: 210px; margin-top: 14px; }
+  .gm-cover.is-cd { max-width: 240px; }
   .gm-body { padding: 16px 16px 22px; }
 }
 

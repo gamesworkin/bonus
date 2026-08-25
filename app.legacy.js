@@ -1,3 +1,17 @@
+function applyCoverShape(img) {
+  if (!img) return;
+  var box = img.parentElement;
+  if (!box) return;
+  var decide = function () {
+    var w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) return;
+    if (w / h > 0.85) { if (box.className.indexOf("is-cd") === -1) box.className += " is-cd"; }
+    else box.className = box.className.replace(/\s*is-cd/g, "");
+  };
+  box.className = box.className.replace(/\s*is-cd/g, "");
+  if (img.complete && img.naturalWidth) decide();
+  img.onload = decide;
+}
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var _excluded = ["id"],
   _excluded2 = ["id"],
@@ -873,6 +887,7 @@ function openGame(id) {
   if (!g) return;
   var cover = $("#gmCover");
   if (g.cover) {
+    applyCoverShape(cover);
     loadHiddenImage(cover, g.cover);
     cover.alt = g.title || "";
     cover.parentElement.hidden = false;
