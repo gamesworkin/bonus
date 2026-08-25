@@ -32,6 +32,20 @@ const PAGE_WINDOW = 5;        // mostra no máximo 5 números de página
 const MAX_IMAGE_KB = 220;     // limite do base64 salvo no Realtime Database
 
 
+/* ============ MODO LEGADO (navegadores antigos / 32 bits) ============ */
+(function () {
+  var el = document.documentElement;
+  var lowMem = (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+  var is32 = /WOW64|Win32|i686|i386/i.test(navigator.userAgent || navigator.platform || "") &&
+    !/x64|Win64|x86_64/i.test(navigator.userAgent || "");
+  var oldUA = /MSIE |Trident\/|Edge\/1[0-8]\./.test(navigator.userAgent || "");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (lowMem || is32 || oldUA || reduce) {
+    if (el.className.indexOf("legacy-mode") === -1) el.className += " legacy-mode";
+  }
+})();
+
 /* ================= PROTEÇÃO (anti cópia / código-fonte) ================= */
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 document.addEventListener("dragstart", (e) => { if (e.target.tagName === "IMG" || e.target.tagName === "A") e.preventDefault(); });
@@ -63,8 +77,8 @@ function openCloaked(key, sameTab) {
   if (!url) return;
   if (sameTab) { location.href = url; return; }
   let w = null;
-  try { w = window.open(url, "_blank"); } catch { w = null; }
-  if (w) { try { w.opener = null; } catch {} return; }
+  try { w = window.open(url, "_blank"); } catch (e) { w = null; }
+  if (w) { try { w.opener = null; } catch (e) {} return; }
   const a = document.createElement("a");
   a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
   a.style.display = "none";
@@ -81,7 +95,7 @@ async function loadHiddenImage(img, url) {
     if (!res.ok) throw new Error("fail");
     const blob = await res.blob();
     img.src = URL.createObjectURL(blob);
-  } catch {
+  } catch (e) {
     img.src = url;
   }
 }
@@ -196,11 +210,11 @@ window.addEventListener("resize", function () {
 });
 window.addEventListener("orientationchange", function () { setTimeout(syncMenuMode, 200); });
 const esc = (v) =>
-  String(v ?? "").replace(/[&<>"']/g, (c) =>
+  String(v == null ? "" : v).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
 const norm = (v) =>
-  String(v ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  String(v == null ? "" : v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 let toastTimer;
 function toast(msg) {
@@ -291,7 +305,7 @@ function applyTheme() {
   r.setProperty("--primary-ink", inkFor(c.primary));
   r.setProperty("--accent", c.accent);
   r.setProperty("--font", t.font || DEFAULT_THEME.font);
-  r.setProperty("--radius", (t.radius ?? 14) + "px");
+  r.setProperty("--radius", (t.radius == null ? 14 : t.radius) + "px");
   return t;
 }
 
@@ -446,8 +460,8 @@ function visibleGames() {
   const byTitle = (a, b) => (a.title || "").localeCompare(b.title || "", "pt-BR");
   const s = { az: byTitle, za: (a, b) => byTitle(b, a) }[sort];
   if (s) list.sort(s);
-  else if (sort === "size-asc") list.sort((a, b) => (sizeInMb(a) ?? Infinity) - (sizeInMb(b) ?? Infinity));
-  else if (sort === "size-desc") list.sort((a, b) => (sizeInMb(b) ?? -1) - (sizeInMb(a) ?? -1));
+  else if (sort === "size-asc") list.sort((a, b) => (sizeInMb(a) == null ? Infinity : sizeInMb(a)) - (sizeInMb(b) == null ? Infinity : sizeInMb(b)));
+  else if (sort === "size-desc") list.sort((a, b) => (sizeInMb(b) == null ? -1 : sizeInMb(b)) - (sizeInMb(a) == null ? -1 : sizeInMb(a)));
   else if (sort === "year-desc") list.sort((a, b) => (b.year || 0) - (a.year || 0));
   else if (sort === "year-asc") list.sort((a, b) => (a.year || 9999) - (b.year || 9999));
   else if (sort === "rating-desc") list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -571,7 +585,7 @@ function renderGames() {
     modalDl.dataset.animBound = "1";
     modalDl.addEventListener("click", (e) => {
       e.stopPropagation();
-      openCloaked(modalDl.dataset.dl);
+      openCloaked(modalDl.dataset.dl, modalDl.dataset.blank === "0");
       modalDl.classList.remove("is-clicked");
       void modalDl.offsetWidth;
       modalDl.classList.add("is-clicked");
@@ -628,7 +642,11 @@ function openGame(id) {
   $("#gmSpecs").innerHTML = specs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
 
   const dl = $("#gmDownload");
-  if (g.download) { dl.dataset.dl = cloak(g.download); dl.classList.remove("hidden"); }
+  if (g.download) {
+    dl.dataset.dl = cloak(g.download);
+    dl.dataset.blank = g.downloadBlank === false ? "0" : "1";
+    dl.classList.remove("hidden");
+  }
   else dl.classList.add("hidden");
 
   openModal("#gameModal");
@@ -923,6 +941,7 @@ function resetForm() {
   $("#gameForm").reset();
   $("#gameId").value = "";
   $("#fPublished").checked = true;
+  $("#fDownloadBlank").checked = true;
   $("#fSizeUnit").value = "GB";
   $("#fCode").value = nextCode();
   imgFields.cover.setValue("");
@@ -948,6 +967,7 @@ function collectForm() {
     rating: $("#fRating").value ? Number($("#fRating").value) : null,
     tags: $("#fTags").value.split(",").map((t) => t.trim()).filter(Boolean),
     download: $("#fDownload").value.trim(),
+    downloadBlank: $("#fDownloadBlank").checked,
     requirements: $("#fReq").value.trim(),
     published: $("#fPublished").checked,
   };
@@ -966,9 +986,10 @@ function fillForm(g) {
   else if (mb != null) { $("#fSizeValue").value = Math.round(mb); $("#fSizeUnit").value = "MB"; }
   else { $("#fSizeValue").value = ""; $("#fSizeUnit").value = "GB"; }
   $("#fPlatform").value = g.platform || "";
-  $("#fRating").value = g.rating ?? "";
+  $("#fRating").value = (g.rating == null ? "" : g.rating);
   $("#fTags").value = (g.tags || []).join(", ");
   $("#fDownload").value = g.download || "";
+  $("#fDownloadBlank").checked = g.downloadBlank !== false;
   $("#fReq").value = g.requirements || "";
   $("#fPublished").checked = g.published !== false;
   formError("");

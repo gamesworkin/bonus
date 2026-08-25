@@ -434,7 +434,11 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 
 
 /* ============ BARRA DE MENUS ============ */
-.menubar { border-top: 1px solid rgba(255,255,255,.06); background: #0a0c12; }
+.menubar {
+  border-top: 1px solid var(--border);
+  background: var(--bg-2);
+  background: color-mix(in srgb, var(--bg-2) 92%, transparent);
+}
 .menubar.hidden { display: none; }
 .menubar-inner {
   max-width: var(--max); margin: 0 auto; padding: 6px 18px;
@@ -443,18 +447,25 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; -we
 }
 .menubar-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .menu-link {
-  white-space: nowrap; text-decoration: none; color: #ffffff;
+  white-space: nowrap; text-decoration: none; color: var(--text);
   font-weight: 700; font-size: .88rem; padding: 8px 12px; border-radius: 9px;
   border: 1px solid transparent; background: transparent;
   -webkit-transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease; transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .menu-link:hover, .menu-link:focus-visible {
-  color: #ffffff; background: rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.18);
+  color: var(--text);
+  background: var(--surface-2);
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface-2));
+  border-color: var(--border);
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
   -webkit-transform: translateY(-1px); transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  box-shadow: var(--shadow); box-shadow: 0 6px 18px color-mix(in srgb, var(--text) 12%, transparent);
 }
-.menu-link.active { color: #ffffff; background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.22); }
+.menu-link.active {
+  color: var(--primary-ink);
+  background: var(--primary);
+  border-color: transparent;
+}
 
 /* ============ FILTROS ============ */
 .filters { border-bottom: 1px solid var(--border); background: var(--bg-2); }
@@ -558,6 +569,7 @@ input[type="color"] { padding: 2px; height: 38px; cursor: pointer; }
 
 /* modo compacto: barra vira painel retrátil */
 .menubar.is-collapsible {
+  background: var(--surface);
   overflow: hidden;
   max-height: 0;
   opacity: 0;
@@ -603,3 +615,63 @@ input[type="color"] { padding: 2px; height: 38px; cursor: pointer; }
   .modal-dl:hover .modal-dl-icon { -webkit-animation: none; animation: none; }
   .card-dl:active, .modal-dl:active { -webkit-transform: scale(.96); transform: scale(.96); }
 }
+
+/* =====================================================================
+   COMPATIBILIDADE — NAVEGADORES ANTIGOS / SISTEMAS 32 BITS
+   Ativado automaticamente por app.js (classe .legacy-mode no <html>)
+   ou quando o dispositivo tem pouca memoria/CPU.
+   ===================================================================== */
+
+/* Fallback: navegadores sem suporte a "gap" em flexbox */
+@supports not (gap: 1px) {
+  .topbar-inner > *, .topbar-actions > *, .brand > *,
+  .row-gap > *, .tags > *, .pager > * { margin-right: 8px; margin-bottom: 6px; }
+}
+
+/* Fallback: sem backdrop-filter usa fundo solido */
+@supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+  .topbar { background: var(--bg); }
+  .modal-backdrop { background: rgba(4, 6, 12, .88); }
+}
+
+/* Fallback: sem CSS grid (IE / navegadores antigos) usa flex */
+@supports not (display: grid) {
+  .grid { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+  .grid > .card { width: 18%; min-width: 170px; margin: 0 1% 18px; }
+  .grid-2 { display: block; }
+  .grid-2 > * { margin-bottom: 12px; }
+  .specs { display: block; }
+}
+
+/* Modo legado: desliga efeitos pesados (blur, sombras grandes, animacoes) */
+html.legacy-mode body {
+  background: var(--bg) !important;
+}
+html.legacy-mode .topbar,
+html.legacy-mode .modal-backdrop {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.legacy-mode .topbar { background: var(--bg) !important; }
+html.legacy-mode .modal-backdrop { background: rgba(4, 6, 12, .9) !important; }
+html.legacy-mode *,
+html.legacy-mode *::before,
+html.legacy-mode *::after {
+  -webkit-transition: none !important;
+  transition: none !important;
+  -webkit-animation: none !important;
+  animation: none !important;
+  -webkit-filter: none !important;
+  filter: none !important;
+  will-change: auto !important;
+  box-shadow: none !important;
+}
+html.legacy-mode .card:hover,
+html.legacy-mode .card-dl:hover,
+html.legacy-mode .modal-dl:hover {
+  -webkit-transform: none !important;
+  transform: none !important;
+}
+html.legacy-mode .card:hover { border-color: var(--primary); }
+html.legacy-mode .card-dl:hover,
+html.legacy-mode .modal-dl:hover { opacity: .9; }

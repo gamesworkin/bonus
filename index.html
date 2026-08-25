@@ -243,6 +243,7 @@
         <fieldset class="form-step" data-step="3">
           <label>Link de download *<input id="fDownload" type="url" required placeholder="https://..." /></label>
           <label>Requisitos mínimos<textarea id="fReq" rows="3"></textarea></label>
+          <label class="checkline"><input type="checkbox" id="fDownloadBlank" checked /> Abrir link de download em nova aba</label>
           <label class="checkline"><input type="checkbox" id="fPublished" checked /> Publicado no site</label>
         </fieldset>
 
@@ -410,6 +411,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="app.js"></script>
+<script>
+/* Detecta navegadores antigos (inclui Windows 32 bits com Chrome/Firefox legados
+   e IE11) e carrega a versao ES5 + polyfills em vez do arquivo moderno. */
+(function () {
+  var legacy = false;
+  try {
+    new Function("var f = async (a = 1, ...b) => { let c = a?.b ?? 0; for (const x of b) c += x; return c; };")();
+    if (!window.Promise || !window.fetch || !window.Map || !Array.prototype.includes || !Object.assign) legacy = true;
+  } catch (e) { legacy = true; }
+  var src = legacy ? "app.legacy.js" : "app.js";
+  if (legacy) document.documentElement.className += " legacy-mode";
+  if (legacy) document.write('<scr' + 'ipt src="polyfills.js"><\/scr' + 'ipt>');
+  document.write('<scr' + 'ipt src="' + src + '"><\/scr' + 'ipt>');
+})();
+</script>
 </body>
 </html>
